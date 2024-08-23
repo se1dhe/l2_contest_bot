@@ -2,17 +2,17 @@ package dev.se1dhe.bot.service;
 
 
 import dev.se1dhe.bot.BotApplication;
-import dev.se1dhe.bot.conf.Config;
+import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.model.Prize;
 import dev.se1dhe.bot.model.Raffle;
 import dev.se1dhe.bot.model.Winner;
 import dev.se1dhe.bot.model.enums.RaffleType;
+import dev.se1dhe.core.bots.AbstractTelegramBot;
 import dev.se1dhe.core.util.BotUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import utils.KeyboardBuilder;
 import utils.XMLParser;
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static utils.KeyboardBuilder.button;
 import static utils.Util.getEmoji;
 import static utils.XMLParser.modifyRaffleType;
 import static utils.XMLParser.parseDelayedRaffle;
@@ -71,7 +70,7 @@ public class UpdateService {
         delayEnd(BotApplication.telegramBot);
     }
 
-    private void dailyEnd (AbsSender bot) throws TelegramApiException {
+    private void dailyEnd (AbstractTelegramBot bot) throws TelegramApiException {
         if (raffleService.getAllRafflesByType(RaffleType.DAILY) != null) {
             for (Raffle raffle : raffleService.getAllRafflesByType(RaffleType.DAILY)) {
                 if (LocalDateTime.now().isAfter(raffle.getRaffleResultDate())) {
@@ -86,7 +85,7 @@ public class UpdateService {
         }
     }
 
-    private void delayEnd (AbsSender bot) throws TelegramApiException {
+    private void delayEnd (AbstractTelegramBot bot) throws TelegramApiException {
         if (raffleService.getAllRafflesByType(RaffleType.PUBLISHED) != null) {
             for (Raffle raffle : raffleService.getAllRafflesByType(RaffleType.PUBLISHED)) {
                 if (LocalDateTime.now().isAfter(raffle.getRaffleResultDate())) {
@@ -101,7 +100,7 @@ public class UpdateService {
         }
     }
 
-    private void autoDeleteRaffle (AbsSender bot)  {
+    private void autoDeleteRaffle (AbstractTelegramBot bot)  {
         if (Config.RAFFLE_AUTO_DELETE) {
             if (raffleService.getAllRafflesByType(RaffleType.ENDED) != null) {
                 for (Raffle raffle : raffleService.getAllRafflesByType(RaffleType.ENDED)) {
@@ -120,12 +119,12 @@ public class UpdateService {
 
 
 
-    private void delayRafflePublished(AbsSender bot) throws IOException, TelegramApiException {
+    private void delayRafflePublished(AbstractTelegramBot bot) throws IOException, TelegramApiException {
         if(parseDelayedRaffle().getType().equals(RaffleType.DELAY)) {
             Raffle raffle = new Raffle();
             raffleService.update(raffle);
             raffle.setName(parseDelayedRaffle().getName());
-            raffle.setDesc(parseDelayedRaffle().getDesc());
+            raffle.setDescription(parseDelayedRaffle().getDescription());
             raffle.setType(RaffleType.CREATED);
             raffle.setStartDate(parseDelayedRaffle().getStartDate());
             raffle.setRaffleResultDate(parseDelayedRaffle().getRaffleResultDate());
@@ -147,8 +146,8 @@ public class UpdateService {
         if (!delayRaffleList.isEmpty()&&raffleService.getAllRafflesByType(RaffleType.CREATED)!=null) {
             for (Raffle delayRaffle : delayRaffleList) {
                 if (LocalDateTime.now().isAfter(delayRaffle.getStartDate())) {
-                    BotUtil.sendPhotoById(bot, Config.CHANNEL_ID, delayRaffle.start(prizeService.getPrizesByRaffle(delayRaffle)), new File(delayRaffle.getImgPath()), KeyboardBuilder.ofInline(2,
-                            button(LocalizationService.getString("raffle.participation"), "raffle_id:" + delayRaffle.getId())));
+                    BotUtil.sendPhotoById(bot, Config.CHANNEL_ID, delayRaffle.start(prizeService.getPrizesByRaffle(delayRaffle)), new File(delayRaffle.getImgPath()), KeyboardBuilder.inline()
+                            .button(LocalizationService.getString("raffle.participation"), "raffle_id:" + delayRaffle.getId()).build());
                     delayRaffle.setType(RaffleType.PUBLISHED);
                     raffleService.update(delayRaffle);
                 }
@@ -158,11 +157,11 @@ public class UpdateService {
     }
 
 
-    public void dailyRaffle(AbsSender bot) throws TelegramApiException {
+    public void dailyRaffle(AbstractTelegramBot bot) throws TelegramApiException {
         Raffle raffle = new Raffle();
         raffleService.update(raffle);
         raffle.setName(LocalizationService.getString("daily.raffleName") + " №" + raffle.getId());
-        raffle.setDesc(LocalizationService.getString("daily.raffleDesc"));
+        raffle.setDescription(LocalizationService.getString("daily.raffleDesc"));
         raffle.setType(RaffleType.DAILY);
         raffle.setRaffleResultDate(LocalDateTime.now().plusDays(1).minusSeconds(30));
         raffle.setWinnerCount(XMLParser.createPrize().size());
@@ -177,9 +176,8 @@ public class UpdateService {
         raffleService.update(raffle);
 
         try {
-            BotUtil.sendHtmlMessageById(bot, Config.CHANNEL_ID, raffle.start(),  KeyboardBuilder.ofInline(2,
-                    button(LocalizationService.getString("raffle.participation"), "raffle_id:" + raffle.getId())
-            ));
+            BotUtil.sendHtmlMessageById(bot, Config.CHANNEL_ID, raffle.start(), KeyboardBuilder.inline()
+                    .button(LocalizationService.getString("raffle.participation"), "raffle_id:" + raffle.getId()).build());
         } catch (TelegramApiException | IOException e) {
             throw new RuntimeException(e);
         }

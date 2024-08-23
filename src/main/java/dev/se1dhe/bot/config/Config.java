@@ -1,8 +1,7 @@
 package dev.se1dhe.bot.config;
 
 import lombok.extern.log4j.Log4j2;
-
-import java.io.IOException;
+import utils.PropertiesParser;
 
 
 @Log4j2
@@ -10,34 +9,75 @@ public class Config {
 
     public static final String CONFIGURATION_BOT_FILE = "config/bot.properties";
     public static final String CONFIGURATION_DB_FILE = "config/database.properties";
+    public static final String CONFIGURATION_DAILY_RAFFLE_FILE = "config/dailyRaffle.properties";
 
     public static String BOT_NAME;
     public static String BOT_TOKEN;
+    public static String CHANNEL_ID;
+    public static String LANGUAGE;
+    public static  String SERVER_COMMAND_NAME;
+    public static boolean RAFFLE_AUTO_DELETE;
+    public static int RAFFLE_AUTO_DELETE_DAYS;
+
+
+    public static String DAILY_RAFFLE_TIME;
+    public static String DAILY_CHANNEL_FOR_SUB;
+    public static boolean DAILY_RAFFLE;
+    public static boolean DAILY_PARTICIPANT_BONUS;
+    public static int BONUS_ITEM_ID;
+    public static String BONUS_ITEM_NAME;
+    public static int BONUS_ITEM_COUNT;
+    public static boolean PREMIUM_ENABLE;
+    public static boolean ITEM_ENABLE;
+
+    public static int PREMIUM_HOUR;
+
+
+
 
     public static String DB_URL;
     public static String DB_USER;
     public static String DB_PWD;
 
+    public static String SERVER_DB_URL;
+    public static String SERVER_DB_USER;
+    public static String SERVER_DB_PWD;
 
 
-
-
-    public static void load() throws IOException {
+    public static void load() {
         final PropertiesParser botConfig = new PropertiesParser(CONFIGURATION_BOT_FILE);
         final PropertiesParser botDBConfig = new PropertiesParser(CONFIGURATION_DB_FILE);
+        final PropertiesParser dailyRaffleConfig = new PropertiesParser(CONFIGURATION_DAILY_RAFFLE_FILE);
 
 
         BOT_NAME = botConfig.getString("bot.name", "contest_bot");
         BOT_TOKEN = botConfig.getString("bot.token", "1590228823:AAE5CS0GZXyOEFj_wreUV48vGclDmSIcdjA");
+        CHANNEL_ID = botConfig.getString("bot.channel_id",  "-1001600979960");
+        LANGUAGE = botConfig.getString("bot.language",  "ru");
+        SERVER_COMMAND_NAME = botConfig.getString("bot.serverName",  "lucera2");
+        RAFFLE_AUTO_DELETE = botConfig.getBoolean("bot.raffleAutoDelete", false);
+        RAFFLE_AUTO_DELETE_DAYS = botConfig.getInt("bot.autoDeleteDays", 3);
+
+
+        DAILY_RAFFLE = dailyRaffleConfig.getBoolean("daily.raffleEnable",  true);
+        DAILY_RAFFLE_TIME = dailyRaffleConfig.getString("daily.raffleTime",  "0 55 02 * * ?");
+        DAILY_CHANNEL_FOR_SUB = dailyRaffleConfig.getString("daily.channelForSub",  "@se1dhe_dev");
+        DAILY_PARTICIPANT_BONUS = dailyRaffleConfig.getBoolean("daily.participationBonus",  true);
+        BONUS_ITEM_ID = dailyRaffleConfig.getInt("daily.bonusItemId",  57);
+        BONUS_ITEM_NAME = dailyRaffleConfig.getString("daily.bonusItemName",  "Adena");
+        BONUS_ITEM_COUNT = dailyRaffleConfig.getInt("daily.bonusItemCount",  500000);
+        PREMIUM_ENABLE = dailyRaffleConfig.getBoolean("daily.bonusPremium",  true);
+        ITEM_ENABLE = dailyRaffleConfig.getBoolean("daily.bonusItem",  true);
+        PREMIUM_HOUR = dailyRaffleConfig.getInt("daily.bonusPremiumHour",  24);
 
 
 
-        DB_URL = botDBConfig.getString("bot.url", "jdbc:mysql://127.0.0.1:3306/bot?useUnicode=true&character_set_server=utf8mb4&autoReconnect=true&interactiveClient=true&serverTimezone=Europe/Kiev&useSSL=false");
+        DB_URL = botDBConfig.getString("bot.url", "jdbc:mysql://127.0.0.1:3306/raffle?useUnicode=true&character_set_server=utf8mb4&autoReconnect=true&interactiveClient=true&serverTimezone=Europe/Kiev&useSSL=false");
         DB_USER = botDBConfig.getString("bot.username", "root");
         DB_PWD = botDBConfig.getString("bot.password", "1234");
-
-
-
+        SERVER_DB_URL = botDBConfig.getString("server_db.url", "jdbc:mysql://localhost:3306/l2j");
+        SERVER_DB_USER = botDBConfig.getString("server_db.username", "root");
+        SERVER_DB_PWD = botDBConfig.getString("server_db.password", "1234");
 
 
     }

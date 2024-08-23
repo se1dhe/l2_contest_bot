@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.games.CallbackGame;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.LinkedList;
@@ -33,82 +34,6 @@ public final class KeyboardBuilder {
         return new ReplyKeyboardBuilder();
     }
 
-    /**
-     * A method to quickly create an {@link InlineKeyboardButton}.
-     * Can be statically imported and used in conjunction with {@link #ofInline}.
-     *
-     * @param text         Display text of the button
-     * @param callbackData Callback data of the button
-     * @return An {@link InlineKeyboardButton} containing text and callback data
-     */
-    public static InlineKeyboardButton button(String text, String callbackData) {
-        return InlineKeyboardButton.builder().text(text).callbackData(callbackData).build();
-    }
-
-    /**
-     * A method to build an inline keyboard.
-     * Designed to be statically imported and to be used in conjunction with {@link #button}.
-     * This method works the same as {@link #ofInline(int, InlineKeyboardButton...)}, but defaults to 2 buttons per row.
-     *
-     * @param buttons Any number of {@link InlineKeyboardButton} to include in the keyboard
-     * @return An instance of {@link InlineKeyboardMarkup} with the buttons
-     * @see #ofInline(int, InlineKeyboardButton...)
-     */
-    public static InlineKeyboardMarkup ofInline(InlineKeyboardButton... buttons) {
-        return ofInline(2, buttons);
-    }
-
-    /**
-     * A method to build an inline keyboard.
-     * Designed to be statically imported and to be used in conjunction with {@link #button}.
-     *
-     * @param rowWidth The number of buttons per row
-     * @param buttons  Any number of {@link InlineKeyboardButton} to include in the keyboard
-     * @return An instance of {@link InlineKeyboardMarkup} with the buttons
-     * @see #ofInline(int, InlineKeyboardButton...)
-     */
-    public static InlineKeyboardMarkup ofInline(int rowWidth, InlineKeyboardButton... buttons) {
-        InlineKeyboardBuilder builder = inline();
-        for (int i = 0; i < buttons.length; i++) {
-            if (i % rowWidth == 0) {
-                builder.row();
-            }
-            builder.button(buttons[i]);
-        }
-        return builder.build();
-    }
-
-    /**
-     * A method to build a reply keyboard. Designed to be statically imported.
-     * This method works the same as {@link #ofReply(int, String...)}, but defaults to 2 buttons per row.
-     *
-     * @param buttons The text of the buttons, with each string being a button.
-     * @return An instance of {@link ReplyKeyboardMarkup} with the buttons
-     * @see #ofReply(int, String...)
-     */
-    public static ReplyKeyboardMarkup ofReply(String... buttons) {
-        return ofReply(2, buttons);
-    }
-
-    /**
-     * A method to build a reply keyboard. Designed to be statically imported.
-     *
-     * @param rowWidth The number of buttons per row
-     * @param buttons  The text of the buttons, with each string being a button.
-     * @return An instance of {@link ReplyKeyboardMarkup} with the buttons
-     * @see #ofReply(String...)
-     */
-    public static ReplyKeyboardMarkup ofReply(int rowWidth, String... buttons) {
-        ReplyKeyboardBuilder builder = reply();
-        for (int i = 0; i < buttons.length; i++) {
-            if (i % rowWidth == 0) {
-                builder.row();
-            }
-            builder.button(buttons[i]);
-        }
-        return builder.build();
-    }
-
     public static final class InlineKeyboardBuilder {
 
         private List<List<InlineKeyboardButton>> keyboard = new LinkedList<>();
@@ -117,53 +42,45 @@ public final class KeyboardBuilder {
         private InlineKeyboardBuilder() {
         }
 
-        public InlineKeyboardBuilder button(InlineKeyboardButton button) {
+        public InlineKeyboardBuilder button(String text, String callbackData) {
+            InlineKeyboardButton button = new InlineKeyboardButton(text);
+            button.setCallbackData(callbackData);
             row.add(button);
             return this;
         }
 
-        public InlineKeyboardBuilder button(String text, String callbackData) {
-            row.add(InlineKeyboardButton.builder().text(text).callbackData(callbackData).build());
-            return this;
-        }
-
         public InlineKeyboardBuilder buttonLogin(String text, String loginUrl) {
-            row.add(InlineKeyboardButton.builder().text(text).loginUrl(new LoginUrl(loginUrl)).build());
-            return this;
-        }
-
-        public InlineKeyboardBuilder buttonGame(String text) {
-            row.add(InlineKeyboardButton.builder().text(text).callbackGame(new CallbackGame()).build());
+            InlineKeyboardButton button = new InlineKeyboardButton(text);
+            button.setLoginUrl(new LoginUrl(loginUrl));
+            row.add(button);
             return this;
         }
 
         public InlineKeyboardBuilder buttonUrl(String text, String url) {
-            row.add(InlineKeyboardButton.builder().text(text).url(url).build());
+            InlineKeyboardButton button = new InlineKeyboardButton(text);
+            button.setUrl(url);
+            row.add(button);
             return this;
         }
 
         public InlineKeyboardBuilder buttonSwitch(String text, String switchInlineQuery) {
-            row.add(InlineKeyboardButton.builder().text(text).switchInlineQuery(switchInlineQuery).build());
+            InlineKeyboardButton button = new InlineKeyboardButton(text);
+            button.setSwitchInlineQuery(switchInlineQuery);
+            row.add(button);
             return this;
         }
 
         public InlineKeyboardBuilder buttonSwitchCurrent(String text, String switchInlineQueryCurrentChat) {
-            row.add(InlineKeyboardButton.builder().text(text).switchInlineQueryCurrentChat(switchInlineQueryCurrentChat).build());
+            InlineKeyboardButton button = new InlineKeyboardButton(text);
+            button.setSwitchInlineQueryCurrentChat(switchInlineQueryCurrentChat);
+            row.add(button);
             return this;
         }
 
-        public InlineKeyboardBuilder button(String text, CallbackGame callbackGame) {
-            row.add(InlineKeyboardButton.builder().text(text).callbackGame(callbackGame).build());
-            return this;
-        }
-
-        public InlineKeyboardBuilder button(String text, LoginUrl loginUrl) {
-            row.add(InlineKeyboardButton.builder().text(text).loginUrl(loginUrl).build());
-            return this;
-        }
-
-        public InlineKeyboardBuilder button(String text, boolean pay) {
-            row.add(InlineKeyboardButton.builder().text(text).pay(pay).build());
+        public InlineKeyboardBuilder buttonCallbackGame(String text) {
+            InlineKeyboardButton button = new InlineKeyboardButton(text);
+            button.setCallbackGame(new CallbackGame());
+            row.add(button);
             return this;
         }
 
@@ -177,7 +94,11 @@ public final class KeyboardBuilder {
 
         public InlineKeyboardMarkup build() {
             row();
-            return new InlineKeyboardMarkup(keyboard);
+            List<InlineKeyboardRow> keyboardRows = new LinkedList<>();
+            for (List<InlineKeyboardButton> row : keyboard) {
+                keyboardRows.add(new InlineKeyboardRow(row));
+            }
+            return new InlineKeyboardMarkup(keyboardRows);
         }
     }
 

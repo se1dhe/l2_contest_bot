@@ -2,16 +2,22 @@ package dev.se1dhe.core.util;
 
 import dev.se1dhe.core.handlers.ICommandHandler;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+
+import java.io.File;
 
 
 public class BotUtil {
@@ -58,7 +64,7 @@ public class BotUtil {
                 chatId(message.getChat().getId()).
                 messageId(message.getMessageId()).
                 text(text).
-                parseMode(useMarkDown ? ParseMode.MARKDOWNV2 : null).
+                parseMode(useMarkDown ? ParseMode.HTML : null).
                 replyMarkup(inlineMarkup).
                 build();
         ;bot.execute(msg);
@@ -74,5 +80,43 @@ public class BotUtil {
                 replyMarkup(inlineMarkup).
                 build();
         bot.execute(msg);
+    }
+
+    public static <T extends TelegramClient> void sendAnswerCallbackQuery(T bot, CallbackQuery query, String answer, boolean showAlert) throws TelegramApiException {
+        final AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery(query.getId());
+        answerCallbackQuery.setCallbackQueryId(query.getId());
+        answerCallbackQuery.setShowAlert(showAlert);
+        answerCallbackQuery.setText(answer);
+        bot.execute(answerCallbackQuery);
+    }
+
+    public static <T extends TelegramClient> void editMessageCaption(T bot, CallbackQuery query, String text, boolean useMarkDown, InlineKeyboardMarkup inlineMarkup) throws TelegramApiException {
+        final EditMessageCaption msg = new EditMessageCaption();
+        msg.setChatId(Long.toString(query.getMessage().getChat().getId()));
+        msg.setMessageId(query.getMessage().getMessageId());
+        msg.setInlineMessageId(query.getInlineMessageId());
+        msg.setCaption(text);
+        msg.setParseMode(ParseMode.HTML);
+        msg.setReplyMarkup(inlineMarkup);
+        bot.execute(msg);
+    }
+
+    public static <T extends TelegramClient> void sendHtmlMessageById(T bot, String chatId, String text, ReplyKeyboard replayMarkup) throws TelegramApiException {
+        final SendMessage msg = new SendMessage(chatId,text);
+        msg.enableHtml(true);
+        msg.setParseMode(ParseMode.HTML);
+        msg.disableWebPagePreview();
+        if (replayMarkup != null) {
+            msg.setReplyMarkup(replayMarkup);
+        }
+        bot.execute(msg);
+    }
+
+    public static <T extends TelegramClient> Message sendPhotoById(T bot, String messageToId, String text, File file, ReplyKeyboard replayMarkup) throws TelegramApiException {
+        final SendPhoto photo = new SendPhoto(messageToId,new InputFile(file));
+        photo.setCaption(text);
+        photo.setReplyMarkup(replayMarkup);
+        photo.setParseMode("HTML");
+        return bot.execute(photo);
     }
 }

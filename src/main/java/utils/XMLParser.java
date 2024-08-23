@@ -1,6 +1,6 @@
 package utils;
 
-import dev.se1dhe.bot.conf.Config;
+import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.model.Prize;
 import dev.se1dhe.bot.model.Raffle;
 import dev.se1dhe.bot.model.enums.PrizeType;
@@ -71,7 +71,7 @@ public class XMLParser {
             // Parse DelayedRaffle details
             Element delayedRaffleElement = doc.getDocumentElement();
             delayedRaffle.setName(getTagValue(delayedRaffleElement, "name"));
-            delayedRaffle.setDesc(getTagValue(delayedRaffleElement, "description"));
+            delayedRaffle.setDescription(getTagValue(delayedRaffleElement, "description"));
             delayedRaffle.setStartDate(parseDateTime(getTagValue(delayedRaffleElement, "startDate")));
             delayedRaffle.setRaffleResultDate(parseDateTime(getTagValue(delayedRaffleElement, "endDate")));
             delayedRaffle.setImgPath(getTagValue(delayedRaffleElement, "imgPath"));

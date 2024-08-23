@@ -1,14 +1,9 @@
-/*
- * Copyright (c) 2023. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
- */
+
 
 package dev.se1dhe.bot.handler;
 
-import dev.se1dhe.bot.conf.Config;
+import dev.se1dhe.bot.BotApplication;
+import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.model.DbUser;
 import dev.se1dhe.bot.model.Prize;
 import dev.se1dhe.bot.model.Raffle;
@@ -26,6 +21,7 @@ import dev.se1dhe.core.handlers.inline.events.InlineCallbackEvent;
 import dev.se1dhe.core.handlers.inline.layout.InlineFixedButtonsPerRowLayout;
 import dev.se1dhe.core.util.BotUtil;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -39,14 +35,14 @@ public class RewardHandler extends AbstractInlineHandler {
     private static String WINNER_ID_FIELD;
     private static String RAFFLE_NAME_BONUS_FIELD;
     private static final String RAFFLE_NAME_FIELD = "raffle_name";
-    private final DbUserService dbUserService;
+    private final DBUserService dbUserService;
     private final RaffleService raffleService;
     private final WinnerService winnerService;
     private final RaffleBonusService raffleBonusService;
 
     private final AtomicBoolean createdAdmin = new AtomicBoolean();
 
-    public RewardHandler(DbUserService dbUserService, RaffleService raffleService, WinnerService winnerService, RaffleBonusService raffleBonusService) {
+    public RewardHandler(DBUserService dbUserService, RaffleService raffleService, WinnerService winnerService, RaffleBonusService raffleBonusService) {
         this.dbUserService = dbUserService;
         this.raffleService = raffleService;
         this.winnerService = winnerService;
@@ -95,32 +91,16 @@ public class RewardHandler extends AbstractInlineHandler {
     private boolean contactHandler(InlineCallbackEvent event) throws TelegramApiException {
         final InlineUserData userData = event.getContext().getUserData(event.getQuery().getFrom().getId());
         if (userData.getState() == 0) {
-            BotUtil.editMessage(event.getBot(), event.getQuery().getMessage(), LocalizationService.getString("contact.message"), false, null);
+            BotUtil.editMessage(BotApplication.telegramBot, (Message) event.getQuery().getMessage(), LocalizationService.getString("contact.message"), false, null);
             return true;
         }
         return false;
     }
 
     private boolean handleGetPrize(InlineCallbackEvent event) throws TelegramApiException {
-        String userName = event.getQuery().getMessage().getFrom().getFirstName();
-        if (event.getQuery().getMessage().getFrom().getUserName() != null) {
-            userName = event.getQuery().getMessage().getFrom().getUserName();
-        }
 
+        DbUser dbUser = dbUserService.registerUser(event.getQuery().getFrom());
 
-        if (!createdAdmin.get() && dbUserService.findAll().isEmpty()) {
-            if (createdAdmin.compareAndSet(false, true)) {
-                if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
-                    dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 10);
-                }
-
-            }
-        } else {
-            if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
-                createdAdmin.set(true);
-                dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 0);
-            }
-        }
         List<Prize> prizeList = new ArrayList<>();
         final IInlineCallbackEvent onQueryCallback = evt ->
         {
@@ -128,7 +108,7 @@ public class RewardHandler extends AbstractInlineHandler {
             if (userData.getState() == 0) {
                 userData.setState(1);
                 userData.getParams().put(RAFFLE_NAME_FIELD, userData.getActiveButton().getName());
-                BotUtil.editMessage(evt.getBot(), evt.getQuery().getMessage(), LocalizationService.getString("start.enterCharName"), false, null);
+                BotUtil.editMessage(BotApplication.telegramBot, (Message) evt.getQuery().getMessage(), LocalizationService.getString("start.enterCharName"), false, null);
                 return true;
             }
             return false;
@@ -151,21 +131,21 @@ public class RewardHandler extends AbstractInlineHandler {
             if (userData.getState() == 1) {
                 final String charName = evt.getMessage().getText();
                 if ((charName == null) || charName.isEmpty()) {
-                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
+                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
                     return true;
                 }
 
                 assert manager != null;
                 if (manager.getObjectIdByCharName(charName)==0) {
-                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
+                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
                     return true;
                 }
                 for (Prize prize : prizeList) {
                     if (prize.getType().equals(PrizeType.MONEY)) {
-                        BotUtil.sendMessage(evt.getBot(), evt.getMessage(), String .format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), String .format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
                     }
                     else {
-                        BotUtil.sendMessage(evt.getBot(), evt.getMessage(), String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
                         manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
                     }
                     Winner winner = winnerService.findById(Long.valueOf(WINNER_ID_FIELD));
@@ -204,38 +184,20 @@ public class RewardHandler extends AbstractInlineHandler {
         usersBuilder.button(defaultBack(event.getContext()));
 
         final InlineMenu usersMenu = usersBuilder.build();
-        userData.editCurrentMenu(event.getBot(), event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
+        userData.editCurrentMenu(BotApplication.telegramBot, (Message) event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
         return true;
     }
 
 
     private boolean handleGetBonus(InlineCallbackEvent event) throws TelegramApiException {
-        String userName = event.getQuery().getMessage().getFrom().getFirstName();
-        if (event.getQuery().getMessage().getFrom().getUserName() != null) {
-            userName = event.getQuery().getMessage().getFrom().getUserName();
-        }
-
-
-        if (!createdAdmin.get() && dbUserService.findAll().isEmpty()) {
-            if (createdAdmin.compareAndSet(false, true)) {
-                if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
-                    dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 10);
-                }
-
-            }
-        } else {
-            if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
-                createdAdmin.set(true);
-                dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 0);
-            }
-        }
+        DbUser dbUser = dbUserService.registerUser(event.getQuery().getFrom());
         final IInlineCallbackEvent onQueryCallback = evt ->
         {
             final InlineUserData userData = evt.getContext().getUserData(evt.getQuery().getFrom().getId());
             if (userData.getState() == 0) {
                 userData.setState(1);
                 userData.getParams().put(RAFFLE_NAME_FIELD, userData.getActiveButton().getName());
-                BotUtil.editMessage(evt.getBot(), evt.getQuery().getMessage(), LocalizationService.getString("start.enterCharName"), false, null);
+                BotUtil.editMessage(BotApplication.telegramBot, (Message) evt.getQuery().getMessage(), LocalizationService.getString("start.enterCharName"), false, null);
                 return true;
             }
             return false;
@@ -258,18 +220,18 @@ public class RewardHandler extends AbstractInlineHandler {
             if (userData.getState() == 1) {
                 final String charName = evt.getMessage().getText();
                 if ((charName == null) || charName.isEmpty()) {
-                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
+                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
                     return true;
                 }
 
                 assert manager != null;
                 if (manager.getObjectIdByCharName(charName)==0) {
-                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
+                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
                     return true;
                 }
 
                 if (!Config.DAILY_PARTICIPANT_BONUS) {
-                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.bonusDisable"), false, false, null);
+                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.bonusDisable"), false, false, null);
                     return true;
                 }
                 String s = LocalizationService.getString("start.bonusDisable");
@@ -284,11 +246,10 @@ public class RewardHandler extends AbstractInlineHandler {
 
                 }
 
-                BotUtil.sendMessage(evt.getBot(), evt.getMessage(), s, false, false, null);
-                DbUser participant = dbUserService.findById(event.getQuery().getFrom().getId());
+                BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), s, false, false, null);
                 Raffle raffle = raffleService.getRaffleById(Long.valueOf(RAFFLE_NAME_BONUS_FIELD));
-                raffle.getParticipant().remove(participant);
-                raffleBonusService.create(raffle.getId(), participant.getId());
+                raffle.getParticipant().remove(dbUser);
+                raffleBonusService.create(raffle.getId(), dbUser.getId());
                 evt.getContext().clear(evt.getMessage().getFrom().getId());
                 return true;
             }
@@ -304,29 +265,29 @@ public class RewardHandler extends AbstractInlineHandler {
         final InlineMenuBuilder usersBuilder = new InlineMenuBuilder(event.getContext(), userData.getActiveMenu());
         usersBuilder.name(LocalizationService.getString("start.raffleChoice"));
         if (raffleBonusService.findAll() != null) {
-        for (Raffle raffle : raffleList) {
-            for (DbUser participant : raffle.getParticipant()) {
-                for (Winner winner : winnerService.findByRaffle(raffle)) {
-                    if (!Objects.equals(winner.getParticipant().getId(), participant.getId())
-                            &&participant.getId().equals(event.getQuery().getFrom().getId())
-                            &&raffleBonusService.findRaffleBonusByRaffleIdAndDbUserId(raffle.getId(), participant.getId())==null) {
-                        usersBuilder.button(new InlineButtonBuilder(event.getContext())
-                                .name("❇ " + raffle.getName())
-                                .forceOnNewRow()
-                                .onQueryCallback(onQueryCallback)
-                                .onInputMessage(onInputMessage)
-                                .build());
-                        RAFFLE_NAME_BONUS_FIELD = String.valueOf(raffle.getId());
+            for (Raffle raffle : raffleList) {
+                for (DbUser participant : raffle.getParticipant()) {
+                    for (Winner winner : winnerService.findByRaffle(raffle)) {
+                        if (!Objects.equals(winner.getParticipant().getId(), participant.getId())
+                                &&participant.getId().equals(event.getQuery().getFrom().getId())
+                                &&raffleBonusService.findRaffleBonusByRaffleIdAndDbUserId(raffle.getId(), participant.getId())==null) {
+                            usersBuilder.button(new InlineButtonBuilder(event.getContext())
+                                    .name("❇ " + raffle.getName())
+                                    .forceOnNewRow()
+                                    .onQueryCallback(onQueryCallback)
+                                    .onInputMessage(onInputMessage)
+                                    .build());
+                            RAFFLE_NAME_BONUS_FIELD = String.valueOf(raffle.getId());
+                        }
                     }
-                }
 
+                }
             }
-        }
         }
         usersBuilder.button(defaultBack(event.getContext()));
 
         final InlineMenu usersMenu = usersBuilder.build();
-        userData.editCurrentMenu(event.getBot(), event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
+        userData.editCurrentMenu(BotApplication.telegramBot, (Message) event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
         return true;
     }
 }

@@ -1,7 +1,8 @@
 package dev.se1dhe.bot;
 
 import dev.se1dhe.bot.config.Config;
-import dev.se1dhe.bot.handler.StartHandler;
+import dev.se1dhe.bot.handler.JoinHandler;
+import dev.se1dhe.bot.handler.RewardHandler;
 import dev.se1dhe.bot.service.AccessLevelValidator;
 import dev.se1dhe.bot.service.DBUserService;
 import dev.se1dhe.core.bots.DefaultTelegramBot;
@@ -27,12 +28,9 @@ public class BotApplication {
 
     private static DBUserService dbUserService;
 
-    private final StartHandler startHandler;
-
     @Autowired
-    public BotApplication(DBUserService dbUserService, StartHandler startHandler) {
+    public BotApplication(DBUserService dbUserService) {
         BotApplication.dbUserService = dbUserService;
-        this.startHandler = startHandler;
     }
 
     public static void main(String[] args) throws TelegramApiException, IOException {
@@ -51,8 +49,8 @@ public class BotApplication {
         botsApplication.registerBot(Config.BOT_TOKEN, telegramBot);
 
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
-        StartHandler startHandler = context.getBean(StartHandler.class);
-        telegramBot.addHandler(startHandler);  // Регистрируем StartHandler
+        telegramBot.addHandler(context.getBean(JoinHandler.class));  // Регистрируем StartHandler
+        telegramBot.addHandler(context.getBean(RewardHandler.class));  // Регистрируем StartHandler
         printSystemInfo();
     }
 

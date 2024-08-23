@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -122,7 +123,11 @@ public abstract class AbstractInlineHandler implements ICommandHandler, IMessage
 
         final IInlineMessageEvent event = activeButton.getInputMessage();
         if (event != null) {
-            return event.onCallbackEvent(new InlineMessageEvent(defaultMenu.getContext(), activeButton, bot, update, message));
+            try {
+                return event.onCallbackEvent(new InlineMessageEvent(defaultMenu.getContext(), activeButton, bot, update, message));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return false;
     }

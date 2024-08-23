@@ -1,7 +1,7 @@
 package dev.se1dhe.bot.model;
 
 
-import dev.se1dhe.bot.conf.Config;
+import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.model.enums.RaffleType;
 import dev.se1dhe.bot.service.LocalizationService;
 import lombok.*;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 @AllArgsConstructor
@@ -27,7 +26,7 @@ public class Raffle {
     @Column(name = "id", nullable = false)
     private Long id;
     private String name;
-    private String desc;
+    private String description;
     private int winnerCount;
 
 
@@ -75,7 +74,7 @@ public class Raffle {
 
         // Исправление: добавлен недостающий аргумент для канала подписки
         return String.format(LocalizationService.getString("raffle.startMessage"),
-                siteUrl, id, desc, s.toString(), 0, winnerCount, siteUrl, siteUrl, channelForSub, Util.dateTimeParser(raffleResultDate));
+                siteUrl, id, description, s.toString(), 0, winnerCount, siteUrl, siteUrl, channelForSub, Util.dateTimeParser(raffleResultDate));
     }
 
 
@@ -113,6 +112,6 @@ public class Raffle {
             }
         }
 
-        return String.format(LocalizationService.getString("delay.startMessage"), name, desc, s, 0, winnerCount, siteUrl,siteUrl,channelForSub, Util.dateTimeParser(raffleResultDate));
+        return String.format(LocalizationService.getString("delay.startMessage"), name, description, s, 0, winnerCount, siteUrl,siteUrl,channelForSub, Util.dateTimeParser(raffleResultDate));
     }
 }

@@ -1,7 +1,7 @@
 package utils;
 
 import dev.se1dhe.bot.service.LocalizationService;
-import dev.se1dhe.core.AbstractTelegramBot;
+import dev.se1dhe.core.bots.AbstractTelegramBot;
 import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
@@ -30,11 +30,7 @@ public class Util {
     }
 
     public  static boolean isMember(AbstractTelegramBot bot, String channel, long userId) {
-        GetChatMember member = new GetChatMember();
-        member.setChatId(channel);
-        member.setUserId(userId);
-
-
+        GetChatMember member = new GetChatMember(channel, userId);
         try {
             ChatMember res = bot.execute(member);
             if (res.getStatus().contains("left") || res.getStatus().equals("kicked")) {
@@ -46,5 +42,18 @@ public class Util {
             log.warn("no access {}" , channel);
         }
         return false;
+    }
+
+    /**
+     * Метод для экранирования символов в строке, которые могут вызвать ошибки при отправке сообщений через Telegram API.
+     *
+     * @param text Текст, который нужно экранировать.
+     * @return Экранированный текст.
+     */
+    public static String escapeTelegramReservedCharacters(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replace("!", "\\!");
     }
 }
