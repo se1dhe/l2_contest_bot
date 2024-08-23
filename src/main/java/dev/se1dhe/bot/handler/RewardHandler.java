@@ -1,0 +1,332 @@
+/*
+ * Copyright (c) 2023. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ */
+
+package dev.se1dhe.bot.handler;
+
+import dev.se1dhe.bot.conf.Config;
+import dev.se1dhe.bot.model.DbUser;
+import dev.se1dhe.bot.model.Prize;
+import dev.se1dhe.bot.model.Raffle;
+import dev.se1dhe.bot.model.Winner;
+import dev.se1dhe.bot.model.enums.PrizeType;
+import dev.se1dhe.bot.service.*;
+import dev.se1dhe.bot.service.dbManager.EternityManager;
+import dev.se1dhe.bot.service.dbManager.Lucera2DbManager;
+import dev.se1dhe.bot.service.dbManager.Manager;
+import dev.se1dhe.bot.service.dbManager.PainDbManager;
+import dev.se1dhe.core.handlers.inline.*;
+import dev.se1dhe.core.handlers.inline.events.IInlineCallbackEvent;
+import dev.se1dhe.core.handlers.inline.events.IInlineMessageEvent;
+import dev.se1dhe.core.handlers.inline.events.InlineCallbackEvent;
+import dev.se1dhe.core.handlers.inline.layout.InlineFixedButtonsPerRowLayout;
+import dev.se1dhe.core.util.BotUtil;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+
+@Service
+public class RewardHandler extends AbstractInlineHandler {
+    private static String WINNER_ID_FIELD;
+    private static String RAFFLE_NAME_BONUS_FIELD;
+    private static final String RAFFLE_NAME_FIELD = "raffle_name";
+    private final DbUserService dbUserService;
+    private final RaffleService raffleService;
+    private final WinnerService winnerService;
+    private final RaffleBonusService raffleBonusService;
+
+    private final AtomicBoolean createdAdmin = new AtomicBoolean();
+
+    public RewardHandler(DbUserService dbUserService, RaffleService raffleService, WinnerService winnerService, RaffleBonusService raffleBonusService) {
+        this.dbUserService = dbUserService;
+        this.raffleService = raffleService;
+        this.winnerService = winnerService;
+        this.raffleBonusService = raffleBonusService;
+    }
+
+    @Override
+    public String getCommand() {
+        return "/start";
+    }
+
+    @Override
+    public String getUsage() {
+        return "/start";
+    }
+
+    @Override
+    public String getDescription() {
+        return "/start";
+    }
+
+    @Override
+    public void registerMenu(InlineContext ctx, InlineMenuBuilder builder) {
+        builder
+                .name(LocalizationService.getString("start.welcomeMessage"))
+                .button(new InlineButtonBuilder(ctx)
+                        .name(LocalizationService.getString("start.getPrize"))
+                        .row(0)
+                        .onQueryCallback(this::handleGetPrize)
+                        .build())
+                .button(new InlineButtonBuilder(ctx)
+                        .name(LocalizationService.getString("start.getBonus"))
+                        .row(0)
+                        .onQueryCallback(this::handleGetBonus)
+                        .build())
+                .button(new InlineButtonBuilder(ctx)
+                        .name(LocalizationService.getString("contact.button"))
+                        .row(1)
+                        .onQueryCallback(this::contactHandler)
+                        .build())
+
+                .button(defaultClose(ctx))
+                .build();
+    }
+
+    private boolean contactHandler(InlineCallbackEvent event) throws TelegramApiException {
+        final InlineUserData userData = event.getContext().getUserData(event.getQuery().getFrom().getId());
+        if (userData.getState() == 0) {
+            BotUtil.editMessage(event.getBot(), event.getQuery().getMessage(), LocalizationService.getString("contact.message"), false, null);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleGetPrize(InlineCallbackEvent event) throws TelegramApiException {
+        String userName = event.getQuery().getMessage().getFrom().getFirstName();
+        if (event.getQuery().getMessage().getFrom().getUserName() != null) {
+            userName = event.getQuery().getMessage().getFrom().getUserName();
+        }
+
+
+        if (!createdAdmin.get() && dbUserService.findAll().isEmpty()) {
+            if (createdAdmin.compareAndSet(false, true)) {
+                if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
+                    dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 10);
+                }
+
+            }
+        } else {
+            if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
+                createdAdmin.set(true);
+                dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 0);
+            }
+        }
+        List<Prize> prizeList = new ArrayList<>();
+        final IInlineCallbackEvent onQueryCallback = evt ->
+        {
+            final InlineUserData userData = evt.getContext().getUserData(evt.getQuery().getFrom().getId());
+            if (userData.getState() == 0) {
+                userData.setState(1);
+                userData.getParams().put(RAFFLE_NAME_FIELD, userData.getActiveButton().getName());
+                BotUtil.editMessage(evt.getBot(), evt.getQuery().getMessage(), LocalizationService.getString("start.enterCharName"), false, null);
+                return true;
+            }
+            return false;
+        };
+
+        final IInlineMessageEvent onInputMessage = evt ->
+        {
+            Manager manager = null;
+
+            if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("pain")) {
+                manager = new PainDbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            }
+            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("lucera2")) {
+                manager = new Lucera2DbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            }
+            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("l2jEternity")) {
+                manager = new EternityManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            }
+            final InlineUserData userData = evt.getContext().getUserData(evt.getMessage().getFrom().getId());
+            if (userData.getState() == 1) {
+                final String charName = evt.getMessage().getText();
+                if ((charName == null) || charName.isEmpty()) {
+                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
+                    return true;
+                }
+
+                assert manager != null;
+                if (manager.getObjectIdByCharName(charName)==0) {
+                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
+                    return true;
+                }
+                for (Prize prize : prizeList) {
+                    if (prize.getType().equals(PrizeType.MONEY)) {
+                        BotUtil.sendMessage(evt.getBot(), evt.getMessage(), String .format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                    }
+                    else {
+                        BotUtil.sendMessage(evt.getBot(), evt.getMessage(), String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                        manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
+                    }
+                    Winner winner = winnerService.findById(Long.valueOf(WINNER_ID_FIELD));
+                    winner.setGetPrize(true);
+                    winnerService.update(winner);
+                    evt.getContext().clear(evt.getMessage().getFrom().getId());
+                    return true;
+                }
+
+                evt.getContext().clear(evt.getMessage().getFrom().getId());
+                return true;
+            }
+
+            return false;
+        };
+
+        List<Raffle> raffleList = raffleService.getAllRaffles();
+        final InlineUserData userData = event.getContext().getUserData(event.getQuery().getFrom().getId());
+        final InlineMenuBuilder usersBuilder = new InlineMenuBuilder(event.getContext(), userData.getActiveMenu());
+        usersBuilder.name(LocalizationService.getString("start.raffleChoice"));
+        for (Raffle raffle : raffleList) {
+            for (Winner winner : winnerService.findAllByRaffleIdAndParticipantId(raffle.getId(),event.getQuery().getFrom().getId())) {
+                if (winner.getPrize() != null && !winner.isGetPrize()) {
+                    usersBuilder.button(new InlineButtonBuilder(event.getContext())
+                            .name("❇ "+raffle.getName())
+                            .forceOnNewRow()
+                            .onQueryCallback(onQueryCallback)
+                            .onInputMessage(onInputMessage)
+                            .build());
+                    prizeList.add(winner.getPrize());
+                    WINNER_ID_FIELD = String.valueOf(winner.getId());
+                }
+
+            }
+        }
+        usersBuilder.button(defaultBack(event.getContext()));
+
+        final InlineMenu usersMenu = usersBuilder.build();
+        userData.editCurrentMenu(event.getBot(), event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
+        return true;
+    }
+
+
+    private boolean handleGetBonus(InlineCallbackEvent event) throws TelegramApiException {
+        String userName = event.getQuery().getMessage().getFrom().getFirstName();
+        if (event.getQuery().getMessage().getFrom().getUserName() != null) {
+            userName = event.getQuery().getMessage().getFrom().getUserName();
+        }
+
+
+        if (!createdAdmin.get() && dbUserService.findAll().isEmpty()) {
+            if (createdAdmin.compareAndSet(false, true)) {
+                if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
+                    dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 10);
+                }
+
+            }
+        } else {
+            if (dbUserService.findById(event.getQuery().getMessage().getFrom().getId()) == null) {
+                createdAdmin.set(true);
+                dbUserService.create(event.getQuery().getMessage().getFrom().getId(), userName, 0);
+            }
+        }
+        final IInlineCallbackEvent onQueryCallback = evt ->
+        {
+            final InlineUserData userData = evt.getContext().getUserData(evt.getQuery().getFrom().getId());
+            if (userData.getState() == 0) {
+                userData.setState(1);
+                userData.getParams().put(RAFFLE_NAME_FIELD, userData.getActiveButton().getName());
+                BotUtil.editMessage(evt.getBot(), evt.getQuery().getMessage(), LocalizationService.getString("start.enterCharName"), false, null);
+                return true;
+            }
+            return false;
+        };
+
+        final IInlineMessageEvent onInputMessage = evt ->
+        {
+            Manager manager = null;
+
+            if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("pain")) {
+                manager = new PainDbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            }
+            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("lucera2")) {
+                manager = new Lucera2DbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            }
+            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("l2jEternity")) {
+                manager = new EternityManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            }
+            final InlineUserData userData = evt.getContext().getUserData(evt.getMessage().getFrom().getId());
+            if (userData.getState() == 1) {
+                final String charName = evt.getMessage().getText();
+                if ((charName == null) || charName.isEmpty()) {
+                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
+                    return true;
+                }
+
+                assert manager != null;
+                if (manager.getObjectIdByCharName(charName)==0) {
+                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
+                    return true;
+                }
+
+                if (!Config.DAILY_PARTICIPANT_BONUS) {
+                    BotUtil.sendMessage(evt.getBot(), evt.getMessage(), LocalizationService.getString("start.bonusDisable"), false, false, null);
+                    return true;
+                }
+                String s = LocalizationService.getString("start.bonusDisable");
+                if (Config.ITEM_ENABLE) {
+                    s = LocalizationService.getString("start.bonusCongratulation");
+                    manager.addItem(manager.getObjectIdByCharName(charName), Config.BONUS_ITEM_ID, Config.BONUS_ITEM_COUNT);
+
+                }
+                if (Config.PREMIUM_ENABLE) {
+                    s = LocalizationService.getString("start.bonusCongratulation");
+                    manager.addPremiumData(manager.getObjectIdByCharName(charName), Config.PREMIUM_HOUR);
+
+                }
+
+                BotUtil.sendMessage(evt.getBot(), evt.getMessage(), s, false, false, null);
+                DbUser participant = dbUserService.findById(event.getQuery().getFrom().getId());
+                Raffle raffle = raffleService.getRaffleById(Long.valueOf(RAFFLE_NAME_BONUS_FIELD));
+                raffle.getParticipant().remove(participant);
+                raffleBonusService.create(raffle.getId(), participant.getId());
+                evt.getContext().clear(evt.getMessage().getFrom().getId());
+                return true;
+            }
+
+            evt.getContext().clear(evt.getMessage().getFrom().getId());
+
+
+            return false;
+        };
+
+        List<Raffle> raffleList = raffleService.getAllRaffles();
+        final InlineUserData userData = event.getContext().getUserData(event.getQuery().getFrom().getId());
+        final InlineMenuBuilder usersBuilder = new InlineMenuBuilder(event.getContext(), userData.getActiveMenu());
+        usersBuilder.name(LocalizationService.getString("start.raffleChoice"));
+        if (raffleBonusService.findAll() != null) {
+        for (Raffle raffle : raffleList) {
+            for (DbUser participant : raffle.getParticipant()) {
+                for (Winner winner : winnerService.findByRaffle(raffle)) {
+                    if (!Objects.equals(winner.getParticipant().getId(), participant.getId())
+                            &&participant.getId().equals(event.getQuery().getFrom().getId())
+                            &&raffleBonusService.findRaffleBonusByRaffleIdAndDbUserId(raffle.getId(), participant.getId())==null) {
+                        usersBuilder.button(new InlineButtonBuilder(event.getContext())
+                                .name("❇ " + raffle.getName())
+                                .forceOnNewRow()
+                                .onQueryCallback(onQueryCallback)
+                                .onInputMessage(onInputMessage)
+                                .build());
+                        RAFFLE_NAME_BONUS_FIELD = String.valueOf(raffle.getId());
+                    }
+                }
+
+            }
+        }
+        }
+        usersBuilder.button(defaultBack(event.getContext()));
+
+        final InlineMenu usersMenu = usersBuilder.build();
+        userData.editCurrentMenu(event.getBot(), event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
+        return true;
+    }
+}
