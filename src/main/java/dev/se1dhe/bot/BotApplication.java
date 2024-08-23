@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -23,6 +24,7 @@ import java.net.InetAddress;
 @SpringBootApplication
 @RequiredArgsConstructor
 @Log4j2
+@EnableScheduling
 public class BotApplication {
     public static DefaultTelegramBot telegramBot;
 
