@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.Set;
 
 @Log4j2
 public class PropertiesParser {
@@ -14,151 +15,118 @@ public class PropertiesParser {
     private final File _file;
     private final Properties _properties = new Properties();
 
-    public PropertiesParser(String name)
-    {
+    public PropertiesParser(String name) {
         this(new File(name));
     }
 
-    public PropertiesParser(File file)
-    {
+    public PropertiesParser(File file) {
         _file = file;
-        try (FileInputStream fileInputStream = new FileInputStream(file))
-        {
-            try (InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, Charset.defaultCharset()))
-            {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            try (InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, Charset.defaultCharset())) {
                 _properties.load(inputStreamReader);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.warn("[" + _file.getName() + "] There was an error loading config reason: " + e.getMessage());
         }
     }
 
-
-
-    public boolean containskey(String key)
-    {
+    public boolean containskey(String key) {
         return _properties.containsKey(key);
     }
 
-    private String getValue(String key)
-    {
+    private String getValue(String key) {
         final String value = _properties.getProperty(key);
         return value != null ? value.trim() : null;
     }
 
-    public boolean getBoolean(String key, boolean defaultValue)
-    {
+    public boolean getBoolean(String key, boolean defaultValue) {
         final String value = getValue(key);
-        if (value == null)
-        {
+        if (value == null) {
             log.warn(("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue));
             return defaultValue;
         }
 
-        if (value.equalsIgnoreCase("true"))
-        {
+        if (value.equalsIgnoreCase("true")) {
             return true;
-        }
-        else if (value.equalsIgnoreCase("false"))
-        {
+        } else if (value.equalsIgnoreCase("false")) {
             return false;
-        }
-        else
-        {
+        } else {
             log.warn("[" + _file.getName() + "] Invalid value specified for key: " + key + " specified value: " + value + " should be \"boolean\" using default value: " + defaultValue);
             return defaultValue;
         }
     }
 
-    public byte getByte(String key, byte defaultValue)
-    {
+    public byte getByte(String key, byte defaultValue) {
         final String value = getValue(key);
-        if (value == null)
-        {
+        if (value == null) {
             log.warn("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue);
             return defaultValue;
         }
 
-        try
-        {
+        try {
             return Byte.parseByte(value);
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             log.warn("[" + _file.getName() + "] Invalid value specified for key: " + key + " specified value: " + value + " should be \"byte\" using default value: " + defaultValue);
             return defaultValue;
         }
     }
 
-    public short getShort(String key, short defaultValue)
-    {
+    public short getShort(String key, short defaultValue) {
         final String value = getValue(key);
-        if (value == null)
-        {
+        if (value == null) {
             log.warn("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue);
             return defaultValue;
         }
 
-        try
-        {
+        try {
             return Short.parseShort(value);
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             log.warn("[" + _file.getName() + "] Invalid value specified for key: " + key + " specified value: " + value + " should be \"short\" using default value: " + defaultValue);
             return defaultValue;
         }
     }
 
-    public int getInt(String key, int defaultValue)
-    {
+    public int getInt(String key, int defaultValue) {
         final String value = getValue(key);
-        if (value == null)
-        {
+        if (value == null) {
             log.warn("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue);
             return defaultValue;
         }
 
-        try
-        {
+        try {
             return Integer.parseInt(value);
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             log.warn("[" + _file.getName() + "] Invalid value specified for key: " + key + " specified value: " + value + " should be \"int\" using default value: " + defaultValue);
             return defaultValue;
         }
     }
 
-    public long getLong(String key, long defaultValue)
-    {
+    public long getLong(String key, long defaultValue) {
         final String value = getValue(key);
-        if (value == null)
-        {
+        if (value == null) {
             log.warn("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue);
             return defaultValue;
         }
 
-        try
-        {
+        try {
             return Long.parseLong(value);
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             log.warn("[" + _file.getName() + "] Invalid value specified for key: " + key + " specified value: " + value + " should be \"long\" using default value: " + defaultValue);
             return defaultValue;
         }
     }
-    public String getString(String key, String defaultValue)
-    {
+
+    public String getString(String key, String defaultValue) {
         final String value = getValue(key);
-        if (value == null)
-        {
+        if (value == null) {
             log.warn("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue);
             return defaultValue;
         }
         return value;
+    }
+
+    // Метод для получения всех ключей
+    public Set<String> getKeys() {
+        return _properties.stringPropertyNames();
     }
 }

@@ -20,15 +20,18 @@ import dev.se1dhe.core.handlers.inline.events.IInlineMessageEvent;
 import dev.se1dhe.core.handlers.inline.events.InlineCallbackEvent;
 import dev.se1dhe.core.handlers.inline.layout.InlineFixedButtonsPerRowLayout;
 import dev.se1dhe.core.util.BotUtil;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @Service
+@Log4j2
 public class RewardHandler extends AbstractInlineHandler {
     private static String WINNER_ID_FIELD;
     private static String RAFFLE_NAME_BONUS_FIELD;
@@ -49,17 +52,17 @@ public class RewardHandler extends AbstractInlineHandler {
 
     @Override
     public String getCommand() {
-        return "/start";
+        return "/test";
     }
 
     @Override
     public String getUsage() {
-        return "/start";
+        return "/test";
     }
 
     @Override
     public String getDescription() {
-        return "/start";
+        return "/test";
     }
 
     @Override
@@ -112,51 +115,48 @@ public class RewardHandler extends AbstractInlineHandler {
             return false;
         };
 
-        final IInlineMessageEvent onInputMessage = evt ->
-        {
+        final IInlineMessageEvent onInputMessage = evt -> {
             Manager manager = null;
 
-            if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("pain")) {
-                manager = new PainDbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            }
-            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("lucera2")) {
-                manager = new Lucera2DbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            }
-            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("l2jEternity")) {
-                manager = new EternityManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            }
-            final InlineUserData userData = evt.getContext().getUserData(evt.getMessage().getFrom().getId());
-            if (userData.getState() == 1) {
-                final String charName = evt.getMessage().getText();
-                if ((charName == null) || charName.isEmpty()) {
-                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
-                    return true;
+            try {
+                // Пример переключения на конкретный сервер
+                Config.switchServer("Server One"); // Имя сервера из файла конфигурации
+
+                // Получаем текущую конфигурацию сервера
+                Config.ServerConfig currentServerConfig = Config.getCurrentServerConfig();
+
+                // Создаем соответствующий менеджер на основе типа сервера
+                switch (currentServerConfig.serverType) {
+                    case "Lucera2":
+                        manager = new Lucera2DbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+                        break;
+                    case "Pain":
+                        manager = new PainDbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+                        break;
+                    case "L2JEternity":
+                        manager = new EternityManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+                        break;
+                    default:
+                        log.error("Неизвестный тип сервера: " + currentServerConfig.serverType);
                 }
 
-                assert manager != null;
-                if (manager.getObjectIdByCharName(charName)==0) {
-                    BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
-                    return true;
+                // Работа с менеджером
+                if (manager != null) {
+                    manager.addItem(12345, 678, 10); // Пример вызова метода
+                    manager.close();
                 }
-                for (Prize prize : prizeList) {
-                    if (prize.getType().equals(PrizeType.MONEY)) {
-                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), String .format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+
+            } catch (SQLException e) {
+                log.error("Ошибка при работе с базой данных: " + e.getMessage());
+            } finally {
+                if (manager != null) {
+                    try {
+                        manager.close();
+                    } catch (SQLException e) {
+                        log.error("Ошибка при закрытии соединения с базой данных: " + e.getMessage());
                     }
-                    else {
-                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
-                        manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
-                    }
-                    Winner winner = winnerService.findById(Long.valueOf(WINNER_ID_FIELD));
-                    winner.setGetPrize(true);
-                    winnerService.update(winner);
-                    evt.getContext().clear(evt.getMessage().getFrom().getId());
-                    return true;
                 }
-
-                evt.getContext().clear(evt.getMessage().getFrom().getId());
-                return true;
             }
-
             return false;
         };
 
@@ -203,12 +203,20 @@ public class RewardHandler extends AbstractInlineHandler {
         final IInlineMessageEvent onInputMessage = evt -> {
             Manager manager = null;
 
-            if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("pain")) {
-                manager = new PainDbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            } else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("lucera2")) {
-                manager = new Lucera2DbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            } else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("l2jEternity")) {
-                manager = new EternityManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
+            // Получаем текущую серверную конфигурацию
+            Config.ServerConfig currentServerConfig = Config.getCurrentServerConfig();
+            if (currentServerConfig == null) {
+                BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.serverConfigMissing"), false, false, null);
+                return true;
+            }
+
+            // Инициализируем менеджера в зависимости от текущей конфигурации сервера
+            if ("pain".equalsIgnoreCase(Config.SERVER_COMMAND_NAME)) {
+                manager = new PainDbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+            } else if ("lucera2".equalsIgnoreCase(Config.SERVER_COMMAND_NAME)) {
+                manager = new Lucera2DbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+            } else if ("l2jEternity".equalsIgnoreCase(Config.SERVER_COMMAND_NAME)) {
+                manager = new EternityManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
             }
 
             final InlineUserData userData = evt.getContext().getUserData(evt.getMessage().getFrom().getId());
