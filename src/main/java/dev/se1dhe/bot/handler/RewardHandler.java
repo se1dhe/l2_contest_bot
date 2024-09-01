@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -191,8 +189,7 @@ public class RewardHandler extends AbstractInlineHandler {
 
     private boolean handleGetBonus(InlineCallbackEvent event) throws TelegramApiException {
         DbUser dbUser = dbUserService.registerUser(event.getQuery().getFrom());
-        final IInlineCallbackEvent onQueryCallback = evt ->
-        {
+        final IInlineCallbackEvent onQueryCallback = evt -> {
             final InlineUserData userData = evt.getContext().getUserData(evt.getQuery().getFrom().getId());
             if (userData.getState() == 0) {
                 userData.setState(1);
@@ -203,19 +200,17 @@ public class RewardHandler extends AbstractInlineHandler {
             return false;
         };
 
-        final IInlineMessageEvent onInputMessage = evt ->
-        {
+        final IInlineMessageEvent onInputMessage = evt -> {
             Manager manager = null;
 
             if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("pain")) {
                 manager = new PainDbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            }
-            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("lucera2")) {
+            } else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("lucera2")) {
                 manager = new Lucera2DbManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
-            }
-            else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("l2jEternity")) {
+            } else if (Config.SERVER_COMMAND_NAME.equalsIgnoreCase("l2jEternity")) {
                 manager = new EternityManager(Config.SERVER_DB_URL, Config.SERVER_DB_USER, Config.SERVER_DB_PWD);
             }
+
             final InlineUserData userData = evt.getContext().getUserData(evt.getMessage().getFrom().getId());
             if (userData.getState() == 1) {
                 final String charName = evt.getMessage().getText();
@@ -225,7 +220,7 @@ public class RewardHandler extends AbstractInlineHandler {
                 }
 
                 assert manager != null;
-                if (manager.getObjectIdByCharName(charName)==0) {
+                if (manager.getObjectIdByCharName(charName) == 0) {
                     BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
                     return true;
                 }
@@ -234,16 +229,15 @@ public class RewardHandler extends AbstractInlineHandler {
                     BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.bonusDisable"), false, false, null);
                     return true;
                 }
+
                 String s = LocalizationService.getString("start.bonusDisable");
                 if (Config.ITEM_ENABLE) {
                     s = LocalizationService.getString("start.bonusCongratulation");
                     manager.addItem(manager.getObjectIdByCharName(charName), Config.BONUS_ITEM_ID, Config.BONUS_ITEM_COUNT);
-
                 }
                 if (Config.PREMIUM_ENABLE) {
                     s = LocalizationService.getString("start.bonusCongratulation");
                     manager.addPremiumData(manager.getObjectIdByCharName(charName), Config.PREMIUM_HOUR);
-
                 }
 
                 BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), s, false, false, null);
@@ -255,8 +249,6 @@ public class RewardHandler extends AbstractInlineHandler {
             }
 
             evt.getContext().clear(evt.getMessage().getFrom().getId());
-
-
             return false;
         };
 
@@ -264,30 +256,36 @@ public class RewardHandler extends AbstractInlineHandler {
         final InlineUserData userData = event.getContext().getUserData(event.getQuery().getFrom().getId());
         final InlineMenuBuilder usersBuilder = new InlineMenuBuilder(event.getContext(), userData.getActiveMenu());
         usersBuilder.name(LocalizationService.getString("start.raffleChoice"));
-        if (raffleBonusService.findAll() != null) {
-            for (Raffle raffle : raffleList) {
+
+        Set<Long> addedRaffles = new HashSet<>();
+
+        for (Raffle raffle : raffleList) {
+            if (raffleBonusService.findRaffleBonusByRaffleIdAndDbUserId(raffle.getId(), event.getQuery().getFrom().getId()) == null) {
                 for (DbUser participant : raffle.getParticipant()) {
-                    for (Winner winner : winnerService.findByRaffle(raffle)) {
-                        if (!Objects.equals(winner.getParticipant().getId(), participant.getId())
-                                &&participant.getId().equals(event.getQuery().getFrom().getId())
-                                &&raffleBonusService.findRaffleBonusByRaffleIdAndDbUserId(raffle.getId(), participant.getId())==null) {
-                            usersBuilder.button(new InlineButtonBuilder(event.getContext())
-                                    .name("❇ " + raffle.getName())
-                                    .forceOnNewRow()
-                                    .onQueryCallback(onQueryCallback)
-                                    .onInputMessage(onInputMessage)
-                                    .build());
-                            RAFFLE_NAME_BONUS_FIELD = String.valueOf(raffle.getId());
+                    if (participant.getId().equals(event.getQuery().getFrom().getId())) {
+                        for (Winner winner : winnerService.findByRaffle(raffle)) {
+                            if (!Objects.equals(winner.getParticipant().getId(), participant.getId())
+                                    && addedRaffles.add(raffle.getId())) {
+                                usersBuilder.button(new InlineButtonBuilder(event.getContext())
+                                        .name("❇ " + raffle.getName())
+                                        .forceOnNewRow()
+                                        .onQueryCallback(onQueryCallback)
+                                        .onInputMessage(onInputMessage)
+                                        .build());
+                                RAFFLE_NAME_BONUS_FIELD = String.valueOf(raffle.getId());
+                                break;
+                            }
                         }
                     }
-
                 }
             }
         }
+
         usersBuilder.button(defaultBack(event.getContext()));
 
         final InlineMenu usersMenu = usersBuilder.build();
         userData.editCurrentMenu(BotApplication.telegramBot, (Message) event.getQuery().getMessage(), new InlineFixedButtonsPerRowLayout(3), usersMenu);
         return true;
     }
+
 }
