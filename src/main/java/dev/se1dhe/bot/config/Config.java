@@ -43,10 +43,26 @@ public class Config {
     public static String DB_USER;
     public static String DB_PWD;
 
+    // Параметры конфигурации для игровых рейтов
+    public static double RATE_XP;
+    public static double RATE_SP;
+    public static double RATE_RAID_XP;
+    public static double RATE_RAID_SP;
+    public static double QUEST_REWARD_RATE;
+    public static double QUEST_REWARD_ADENA_RATE;
+    public static double QUEST_DROP_RATE;
+    public static double DROP_ADENA;
+    public static double DROP_ITEMS;
+    public static double DROP_SEAL_STONES;
+    public static double DROP_RAID_ITEMS;
+    public static double DROP_SPOIL;
+
     // Параметры серверов
     private static Map<String, ServerConfig> serverConfigs = new HashMap<>();
     @Getter
     private static ServerConfig currentServerConfig;
+
+
 
     // Класс для хранения конфигурации сервера
     public static class ServerConfig {
@@ -92,6 +108,20 @@ public class Config {
         ITEM_ENABLE = dailyRaffleConfig.getBoolean("daily.bonusItem", true);
         PREMIUM_HOUR = dailyRaffleConfig.getInt("daily.bonusPremiumHour", 24);
 
+        // Загрузка игровых рейтов из конфигурации
+        RATE_XP = botConfig.getDouble("rateXp", 1.5);
+        RATE_SP = botConfig.getDouble("rateSp", 1.5);
+        RATE_RAID_XP = botConfig.getDouble("rateRaidXp", 1.5);
+        RATE_RAID_SP = botConfig.getDouble("rateRaidSp", 1.5);
+        QUEST_REWARD_RATE = botConfig.getDouble("questRewardRate", 1.5);
+        QUEST_REWARD_ADENA_RATE = botConfig.getDouble("questRewardAdenaRate", 1.5);
+        QUEST_DROP_RATE = botConfig.getDouble("questDropRate", 1.5);
+        DROP_ADENA = botConfig.getDouble("dropAdena", 1.5);
+        DROP_ITEMS = botConfig.getDouble("dropItems", 1.5);
+        DROP_SEAL_STONES = botConfig.getDouble("dropSealStones", 1.5);
+        DROP_RAID_ITEMS = botConfig.getDouble("dropRaidItems", 1.5);
+        DROP_SPOIL = botConfig.getDouble("dropSpoil", 1.5);
+
 
 
         DB_URL = botDBConfig.getString("bot.url", "jdbc:mysql://127.0.0.1:3306/raffle?useUnicode=true&character_set_server=utf8mb4&autoReconnect=true&interactiveClient=true&serverTimezone=Europe/Kiev&useSSL=false");
@@ -128,7 +158,7 @@ public class Config {
             String url = botDBConfig.getString(prefix + ".url", "");
             String username = botDBConfig.getString(prefix + ".username", "root");
             String password = botDBConfig.getString(prefix + ".password", "1234");
-            String type = botDBConfig.getString(prefix + ".serverType", "Unknown");
+            String type = botDBConfig.getString(prefix + ".serverType", "l2server");
 
             // Проверка, что обязательные параметры не пустые
             if (!url.isEmpty() && !name.isEmpty()) {

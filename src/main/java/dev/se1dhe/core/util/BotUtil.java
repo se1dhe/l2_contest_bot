@@ -90,7 +90,7 @@ public class BotUtil {
         bot.execute(answerCallbackQuery);
     }
 
-    public static <T extends TelegramClient> void editMessageCaption(T bot, CallbackQuery query, String text, boolean useMarkDown, InlineKeyboardMarkup inlineMarkup) throws TelegramApiException {
+    public static <T extends TelegramClient> void editMessageCaption(T bot, CallbackQuery query, String text, InlineKeyboardMarkup inlineMarkup) throws TelegramApiException {
         final EditMessageCaption msg = new EditMessageCaption();
         msg.setChatId(Long.toString(query.getMessage().getChat().getId()));
         msg.setMessageId(query.getMessage().getMessageId());

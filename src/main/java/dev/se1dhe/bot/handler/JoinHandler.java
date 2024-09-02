@@ -65,12 +65,12 @@ public class JoinHandler implements ICallbackQueryHandler {
             BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.successful"),Util.dateTimeParser(raffle.getRaffleResultDate())), false);
             Message message = (Message) query.getMessage();
             if (!message.hasPhoto()) {
-                BotUtil.editMessage(bot, (Message) query.getMessage(), start(raffle), false, KeyboardBuilder.inline()
+                BotUtil.editMessage(bot, (Message) query.getMessage(), start(raffle), true, KeyboardBuilder.inline()
                         .button(LocalizationService.getString("raffle.participation"), "raffle_id:" + raffle.getId())
                         .build());
             }
             else
-                BotUtil.editMessageCaption(bot, query, startDelay(raffle), false, KeyboardBuilder.inline()
+                BotUtil.editMessageCaption(bot, query, startDelay(raffle), KeyboardBuilder.inline()
                         .button(LocalizationService.getString("raffle.participation"), "raffle_id:" + raffle.getId())
                         .build());
 

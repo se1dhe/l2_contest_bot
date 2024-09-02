@@ -52,17 +52,17 @@ public class RewardHandler extends AbstractInlineHandler {
 
     @Override
     public String getCommand() {
-        return "/test";
+        return "/start";
     }
 
     @Override
     public String getUsage() {
-        return "/test";
+        return "/start";
     }
 
     @Override
     public String getDescription() {
-        return "/test";
+        return "/start";
     }
 
     @Override
@@ -139,13 +139,34 @@ public class RewardHandler extends AbstractInlineHandler {
                     default:
                         log.error("Неизвестный тип сервера: " + currentServerConfig.serverType);
                 }
+                final InlineUserData userData = evt.getContext().getUserData(evt.getMessage().getFrom().getId());
+                final String charName = evt.getMessage().getText();
 
-                // Работа с менеджером
-                if (manager != null) {
-                    manager.addItem(12345, 678, 10); // Пример вызова метода
-                    manager.close();
+                if (userData.getState() == 1) {
+                    if ((charName == null) || charName.isEmpty()) {
+                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.emptyField"), false, false, null);
+                        return true;
+                    }
+                    assert manager != null;
+                    if (manager.getObjectIdByCharName(charName) == 0) {
+                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), LocalizationService.getString("start.incorrectCharName"), false, false, null);
+                        return true;
+                    }
                 }
 
+                for (Prize prize : prizeList) {
+                    if (prize.getType().equals(PrizeType.MONEY)) {
+                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), String.format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                    } else {
+                        BotUtil.sendMessage(BotApplication.telegramBot, evt.getMessage(), String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                        manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
+                    }
+                }
+                Winner winner = winnerService.findById(Long.valueOf(WINNER_ID_FIELD));
+                winner.setGetPrize(true);
+                winnerService.update(winner);
+                evt.getContext().clear(evt.getMessage().getFrom().getId());
+                return true;
             } catch (SQLException e) {
                 log.error("Ошибка при работе с базой данных: " + e.getMessage());
             } finally {
@@ -157,6 +178,7 @@ public class RewardHandler extends AbstractInlineHandler {
                     }
                 }
             }
+            evt.getContext().clear(evt.getMessage().getFrom().getId());
             return false;
         };
 

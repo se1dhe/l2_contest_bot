@@ -1,5 +1,7 @@
 package dev.se1dhe.bot.service.dbManager;
 
+import dev.se1dhe.bot.config.Config;
+
 import java.sql.*;
 
 public class Lucera2DbManager extends Manager {
@@ -36,7 +38,10 @@ public class Lucera2DbManager extends Manager {
         // SQL запросы
         String getAccountQuery = "SELECT `account_name` FROM `characters` WHERE `obj_Id` = ?";
         String getPremiumDataQuery = "SELECT `expireTime` FROM `accounts_bonuses` WHERE `account` = ?";
-        String insertBonusQuery = "INSERT INTO `accounts_bonuses` (`account`, `expireTime`, `rateXp`, `rateSp`, `rateRaidXp`, `rateRaidSp`, `questRewardRate`, `questRewardAdenaRate`, `questDropRate`, `dropAdena`, `dropItems`, `dropSealStones`, `dropRaidItems`, `dropSpoil`, `enchantItemBonus`, `enchantSkillBonus`, `hwidsLimit`) VALUES (?, ?, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1)";
+        String insertBonusQuery = "INSERT INTO `accounts_bonuses` (`account`, `expireTime`, `rateXp`, `rateSp`, `rateRaidXp`, `rateRaidSp`, " +
+                "`questRewardRate`, `questRewardAdenaRate`, `questDropRate`, `dropAdena`, `dropItems`, `dropSealStones`, `dropRaidItems`, " +
+                "`dropSpoil`, `enchantItemBonus`, `enchantSkillBonus`, `hwidsLimit`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1.01, 1.05, 1)";
         String updateBonusQuery = "UPDATE `accounts_bonuses` SET `expireTime` = ? WHERE `account` = ?";
 
         // Преобразование часов в секунды
@@ -79,6 +84,19 @@ public class Lucera2DbManager extends Manager {
                             // Если запись не существует, вставляем новую
                             updateStatement.setString(1, accountName);
                             updateStatement.setInt(2, newExpireTimeSeconds);
+                            // Передача игровых рейтов в SQL-запрос
+                            updateStatement.setDouble(3, Config.RATE_XP);
+                            updateStatement.setDouble(4, Config.RATE_SP);
+                            updateStatement.setDouble(5, Config.RATE_RAID_XP);
+                            updateStatement.setDouble(6, Config.RATE_RAID_SP);
+                            updateStatement.setDouble(7, Config.QUEST_REWARD_RATE);
+                            updateStatement.setDouble(8, Config.QUEST_REWARD_ADENA_RATE);
+                            updateStatement.setDouble(9, Config.QUEST_DROP_RATE);
+                            updateStatement.setDouble(10, Config.DROP_ADENA);
+                            updateStatement.setDouble(11, Config.DROP_ITEMS);
+                            updateStatement.setDouble(12, Config.DROP_SEAL_STONES);
+                            updateStatement.setDouble(13, Config.DROP_RAID_ITEMS);
+                            updateStatement.setDouble(14, Config.DROP_SPOIL);
                         }
 
                         updateStatement.executeUpdate();
@@ -89,6 +107,7 @@ public class Lucera2DbManager extends Manager {
             }
         }
     }
+
 
 
 

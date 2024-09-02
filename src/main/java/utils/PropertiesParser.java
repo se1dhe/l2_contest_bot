@@ -129,4 +129,23 @@ public class PropertiesParser {
     public Set<String> getKeys() {
         return _properties.stringPropertyNames();
     }
+
+    public double getDouble(String key, double defaultValue) {
+        // Получаем значение по ключу из файла конфигурации
+        final String value = getValue(key);
+        // Если значение не найдено, возвращаем значение по умолчанию и записываем предупреждение в лог
+        if (value == null) {
+            log.warn("[" + _file.getName() + "] missing property for key: " + key + " using default value: " + defaultValue);
+            return defaultValue;
+        }
+
+        try {
+            // Пытаемся преобразовать значение в тип double
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            // Если возникло исключение, пишем об этом в лог и возвращаем значение по умолчанию
+            log.warn("[" + _file.getName() + "] Invalid value specified for key: " + key + " specified value: " + value + " should be \"double\" using default value: " + defaultValue);
+            return defaultValue;
+        }
+    }
 }
