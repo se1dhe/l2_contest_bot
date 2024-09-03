@@ -27,9 +27,12 @@ public class DBUserService {
         Optional<DbUser> existingUserOptional = dbUserRepository.findById(userId);
 
         if (existingUserOptional.isPresent()) {
+            if(existingUserOptional.get().getLang()==null) {
+                existingUserOptional.get().setLang("ru");
+            }
             return existingUserOptional.get();
         } else {
-            DbUser newUser = new DbUser(userId, userName, 0, LocalDateTime.now(), user.getLanguageCode());
+            DbUser newUser = new DbUser(userId, userName, 0, LocalDateTime.now(), "ru");
             dbUserRepository.save(newUser);
             log.info("Пользователь успешно зарегистрирован: {}", newUser.getUserName());
             return newUser;

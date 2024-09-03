@@ -23,18 +23,18 @@ public class DbUser {
     private int accessLevel;
     private LocalDateTime regDate;
     private boolean getPrize;
-    private String languageCode;
+    private String lang;
 
     @ManyToMany(mappedBy = "participant")
     private List<Raffle> raffles = new ArrayList<>();
     private int state;
 
-    public DbUser(Long id, String userName, int accessLevel, LocalDateTime regDate, String languageCode) {
+    public DbUser(Long id, String userName, int accessLevel, LocalDateTime regDate, String lang) {
         this.id = id;
         this.userName = userName;
         this.accessLevel = accessLevel;
         this.regDate = regDate;
-        this.languageCode = languageCode;
+        this.lang = lang;
     }
 
 

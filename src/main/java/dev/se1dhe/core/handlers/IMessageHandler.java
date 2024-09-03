@@ -5,6 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.SQLException;
+
 
 public interface IMessageHandler extends ITelegramHandler {
 	/**
@@ -16,5 +18,5 @@ public interface IMessageHandler extends ITelegramHandler {
 	 * @return {@code true} if handler 'consumed' that event, aborting notification to other handlers, {@code false} otherwise, continuing to look for handler that would return {@code true}
 	 * @throws TelegramApiException the exception
 	 */
-	boolean onMessage(AbstractTelegramBot bot, Update update, Message message) throws TelegramApiException;
+	boolean onMessage(AbstractTelegramBot bot, Update update, Message message) throws TelegramApiException, SQLException;
 }

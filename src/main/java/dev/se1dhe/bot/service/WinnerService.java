@@ -9,11 +9,15 @@ import dev.se1dhe.bot.model.enums.RaffleType;
 import dev.se1dhe.bot.repository.PrizeRepository;
 import dev.se1dhe.bot.repository.RaffleRepository;
 import dev.se1dhe.bot.repository.WinnerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class WinnerService {
@@ -98,5 +102,19 @@ public class WinnerService {
 
     public void delete(Winner winner) {
         winnerRepository.delete(winner);
+    }
+
+    public Page<Raffle> findAllByParticipantId(Long participantId, Pageable pageable) {
+        // Получаем страницу всех побед по ID участника
+        Page<Winner> winnersPage = winnerRepository.findAllByParticipantId(participantId, pageable);
+
+        // Извлекаем уникальные конкурсы из списка победителей
+        List<Raffle> raffles = winnersPage.getContent().stream()
+                .map(Winner::getRaffle)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Создаем Page<Raffle> из списка уникальных конкурсов
+        return new PageImpl<>(raffles, pageable, winnersPage.getTotalElements());
     }
 }

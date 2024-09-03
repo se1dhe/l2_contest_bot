@@ -52,17 +52,17 @@ public class RewardHandler extends AbstractInlineHandler {
 
     @Override
     public String getCommand() {
-        return "/start";
+        return "/test";
     }
 
     @Override
     public String getUsage() {
-        return "/start";
+        return "/test";
     }
 
     @Override
     public String getDescription() {
-        return "/start";
+        return "/test";
     }
 
     @Override

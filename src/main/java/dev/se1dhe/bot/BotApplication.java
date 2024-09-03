@@ -1,8 +1,7 @@
 package dev.se1dhe.bot;
 
 import dev.se1dhe.bot.config.Config;
-import dev.se1dhe.bot.handler.JoinHandler;
-import dev.se1dhe.bot.handler.RewardHandler;
+import dev.se1dhe.bot.handler.*;
 import dev.se1dhe.bot.service.AccessLevelValidator;
 import dev.se1dhe.bot.service.DBUserService;
 import dev.se1dhe.core.bots.DefaultTelegramBot;
@@ -35,7 +34,7 @@ public class BotApplication {
         BotApplication.dbUserService = dbUserService;
     }
 
-    public static void main(String[] args) throws TelegramApiException, IOException {
+    public static void main(String[] args) throws TelegramApiException {
         Config.load();
         ApplicationContext context = SpringApplication.run(BotApplication.class, args);
 
@@ -51,8 +50,11 @@ public class BotApplication {
         botsApplication.registerBot(Config.BOT_TOKEN, telegramBot);
 
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
-        telegramBot.addHandler(context.getBean(JoinHandler.class));  // Регистрируем StartHandler
-        telegramBot.addHandler(context.getBean(RewardHandler.class));  // Регистрируем StartHandler
+        telegramBot.addHandler(context.getBean(StartHandler.class));
+        telegramBot.addHandler(context.getBean(ContactHandler.class));
+        telegramBot.addHandler(context.getBean(JoinHandler.class));
+        telegramBot.addHandler(context.getBean(PrizeHandler.class));
+        telegramBot.addHandler(context.getBean(RewardHandler.class));
         printSystemInfo();
     }
 

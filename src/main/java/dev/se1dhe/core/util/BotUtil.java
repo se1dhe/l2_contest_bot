@@ -77,8 +77,9 @@ public class BotUtil {
                 inlineMessageId(query.getInlineMessageId()).
                 text(text).
                 parseMode(useMarkDown ? ParseMode.MARKDOWNV2 : null).
-                replyMarkup(inlineMarkup).
-                build();
+                replyMarkup(inlineMarkup)
+                .disableWebPagePreview(true)
+                .build();
         bot.execute(msg);
     }
 

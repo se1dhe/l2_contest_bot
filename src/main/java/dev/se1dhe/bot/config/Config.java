@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import utils.PropertiesParser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class Config {
     public static String SERVER_COMMAND_NAME;
     public static boolean RAFFLE_AUTO_DELETE;
     public static int RAFFLE_AUTO_DELETE_DAYS;
+    public static int ITEM_ON_PAGE;
 
     // Параметры ежедневного розыгрыша
     public static String DAILY_RAFFLE_TIME;
@@ -38,7 +40,7 @@ public class Config {
     public static boolean ITEM_ENABLE;
     public static int PREMIUM_HOUR;
 
-
+    // Параметры базы данных
     public static String DB_URL;
     public static String DB_USER;
     public static String DB_PWD;
@@ -61,8 +63,6 @@ public class Config {
     private static Map<String, ServerConfig> serverConfigs = new HashMap<>();
     @Getter
     private static ServerConfig currentServerConfig;
-
-
 
     // Класс для хранения конфигурации сервера
     public static class ServerConfig {
@@ -95,6 +95,7 @@ public class Config {
         SERVER_COMMAND_NAME = botConfig.getString("bot.serverName", "lucera2");
         RAFFLE_AUTO_DELETE = botConfig.getBoolean("bot.raffleAutoDelete", false);
         RAFFLE_AUTO_DELETE_DAYS = botConfig.getInt("bot.autoDeleteDays", 3);
+        ITEM_ON_PAGE = botConfig.getInt("bot.itemOnPage", 3);
 
         // Загрузка параметров ежедневного розыгрыша
         DAILY_RAFFLE = dailyRaffleConfig.getBoolean("daily.raffleEnable", true);
@@ -122,8 +123,7 @@ public class Config {
         DROP_RAID_ITEMS = botConfig.getDouble("dropRaidItems", 1.5);
         DROP_SPOIL = botConfig.getDouble("dropSpoil", 1.5);
 
-
-
+        // Загрузка параметров базы данных
         DB_URL = botDBConfig.getString("bot.url", "jdbc:mysql://127.0.0.1:3306/raffle?useUnicode=true&character_set_server=utf8mb4&autoReconnect=true&interactiveClient=true&serverTimezone=Europe/Kiev&useSSL=false");
         DB_USER = botDBConfig.getString("bot.username", "root");
         DB_PWD = botDBConfig.getString("bot.password", "1234");
@@ -167,12 +167,28 @@ public class Config {
         }
     }
 
+    // Метод для получения списка доступных серверов
+    public static List<ServerConfig> getAvailableServers() {
+        // Возвращаем список объектов ServerConfig из serverConfigs
+        return new ArrayList<>(serverConfigs.values());
+    }
+
+    // Пример использования метода для вывода списка серверов
+    public static void printAvailableServers() {
+        List<ServerConfig> servers = getAvailableServers();
+        if (servers.isEmpty()) {
+            log.info("Доступных серверов нет.");
+        } else {
+            servers.forEach(server -> log.info("Доступный сервер: " + server.name));
+        }
+    }
+
     // Метод для переключения текущего сервера по имени
     public static void switchServer(String serverName) {
         ServerConfig config = serverConfigs.get(serverName);
         if (config != null) {
             currentServerConfig = config;
-            log.info("Переключение на сервер: " + config.name);
+            log.info("Переключились на сервер: " + config.name);
         } else {
             log.warn("Сервер с именем \"" + serverName + "\" не найден.");
         }
