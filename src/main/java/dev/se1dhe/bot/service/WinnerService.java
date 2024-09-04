@@ -24,6 +24,7 @@ public class WinnerService {
     private final WinnerRepository winnerRepository;
     private final PrizeRepository prizeRepository;
     private final RaffleRepository raffleRepository;
+
     private final Random random;
 
     public WinnerService(WinnerRepository winnerRepository, PrizeRepository prizeRepository, RaffleRepository raffleRepository) {
@@ -77,6 +78,23 @@ public class WinnerService {
         return winnerRepository.findByRaffleIdAndParticipantId(raffleId, participantId);
     }
 
+    public Page<Raffle> findUnclaimedPrizesByUser(DbUser user, Pageable pageable) {
+        List<Winner> winners = winnerRepository.findByParticipant(user);
+        List<Raffle> rafflesWithUnclaimedPrizes = winners.stream()
+                .filter(winner -> !winner.isGetPrize())
+                .map(Winner::getRaffle)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Создаем Page из списка конкурсов
+        int total = rafflesWithUnclaimedPrizes.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), total);
+        List<Raffle> pageRaffles = rafflesWithUnclaimedPrizes.subList(start, end);
+
+        return new PageImpl<>(pageRaffles, pageable, total);
+    }
+
 
     public List<Winner> findByPrize(Prize prize) {
         return winnerRepository.findByPrize(prize);
@@ -117,4 +135,6 @@ public class WinnerService {
         // Создаем Page<Raffle> из списка уникальных конкурсов
         return new PageImpl<>(raffles, pageable, winnersPage.getTotalElements());
     }
+
+
 }

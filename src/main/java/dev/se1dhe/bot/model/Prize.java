@@ -27,4 +27,6 @@ public class Prize {
     private int place;
     @ManyToMany(mappedBy = "prizes")
     private List<Raffle> raffles = new ArrayList<>();
+
+
 }

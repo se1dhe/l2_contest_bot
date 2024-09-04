@@ -1,6 +1,5 @@
 package dev.se1dhe.bot.handler;
 
-
 import dev.se1dhe.bot.BotApplication;
 import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.model.DbUser;
@@ -10,6 +9,7 @@ import dev.se1dhe.bot.model.Winner;
 import dev.se1dhe.bot.model.enums.PrizeType;
 import dev.se1dhe.bot.service.DBUserService;
 import dev.se1dhe.bot.service.LocalizationService;
+import dev.se1dhe.bot.service.RaffleService;
 import dev.se1dhe.bot.service.WinnerService;
 import dev.se1dhe.bot.service.dbManager.EternityManager;
 import dev.se1dhe.bot.service.dbManager.Lucera2DbManager;
@@ -17,7 +17,6 @@ import dev.se1dhe.bot.service.dbManager.Manager;
 import dev.se1dhe.bot.service.dbManager.PainDbManager;
 import dev.se1dhe.core.bots.AbstractTelegramBot;
 import dev.se1dhe.core.handlers.ICallbackQueryHandler;
-import dev.se1dhe.core.handlers.ICommandHandler;
 import dev.se1dhe.core.handlers.IMessageHandler;
 import dev.se1dhe.core.util.BotUtil;
 import lombok.extern.log4j.Log4j2;
@@ -34,8 +33,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.sql.SQLException;
 import java.util.*;
 
-import static utils.menu.MainMenu.buildServerListMenu;
-import static utils.menu.MainMenu.buildUserWinningsMenu;
+import static utils.menu.MainMenu.*;
 
 @Service
 @Log4j2
@@ -43,27 +41,36 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
 
     private final DBUserService dbUserService;
     private final WinnerService winnerService;
-
+    private final RaffleService raffleService;
     private final Map<Long, Map<String, String>> userData = new HashMap<>();
-    private static String WINNER_ID_FIELD;
 
-
-    public PrizeHandler(DBUserService dbUserService, WinnerService winnerService) {
+    public PrizeHandler(DBUserService dbUserService, WinnerService winnerService, RaffleService raffleService) {
         this.dbUserService = dbUserService;
         this.winnerService = winnerService;
+        this.raffleService = raffleService;
     }
 
+    /**
+     * Обрабатывает нажатие кнопок с Callback Query
+     *
+     * @param bot   Экземпляр бота
+     * @param update Обновление от Telegram
+     * @param query Запрос с данными
+     * @return Возвращает true, если обработка завершена
+     * @throws TelegramApiException Исключение при работе с API Telegram
+     */
     @Override
     public boolean onCallbackQuery(AbstractTelegramBot bot, Update update, CallbackQuery query) throws TelegramApiException {
         DbUser dbUser = dbUserService.registerUser(query.getFrom());
 
+        // Инициализация данных пользователя
         userData.putIfAbsent(dbUser.getId(), new HashMap<>());
         userData.get(dbUser.getId()).putIfAbsent("state", "INIT");
 
-        if (query.getData().equals("reward") && userData.get(dbUser.getId()).get("state").equals("INIT") ) {
+        // Обработка нажатия кнопки "reward"
+        if (query.getData().equals("reward")) {
             Pageable pageable = PageRequest.of(0, Config.ITEM_ON_PAGE);
-            Page<Raffle> rafflesPage = winnerService.findAllByParticipantId(dbUser.getId(), pageable);
-
+            Page<Raffle> rafflesPage = winnerService.findUnclaimedPrizesByUser(dbUser, pageable);
             BotUtil.editMessage(
                     bot,
                     query,
@@ -73,11 +80,11 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
             );
 
             userData.get(dbUser.getId()).put("state", "RAFFLE_CHOICE");
-
             return true;
         }
 
-        if (query.getData().startsWith("raffle-details:")&& userData.get(dbUser.getId()).get("state").equals("RAFFLE_CHOICE") ) {
+        // Обработка нажатия кнопки с деталями розыгрыша
+        if (query.getData().startsWith("raffle-details:") && userData.get(dbUser.getId()).get("state").equals("RAFFLE_CHOICE")) {
             userData.get(dbUser.getId()).put("raffleId", query.getData().replace("raffle-details:", ""));
             Pageable pageable = PageRequest.of(0, Config.ITEM_ON_PAGE);
             List<Config.ServerConfig> servers = Config.getAvailableServers();
@@ -85,16 +92,15 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
             int end = Math.min((start + pageable.getPageSize()), servers.size());
             Page<Config.ServerConfig> serversPage = new PageImpl<>(servers.subList(start, end), pageable, servers.size());
             userData.get(dbUser.getId()).put("state", "SERVER_CHOICE");
-            BotUtil.editMessage(bot,query,"Выберите сервер!",false,buildServerListMenu(serversPage, dbUser));
-
+            BotUtil.editMessage(bot, query, "Выберите сервер!", false, buildServerListMenu(serversPage, dbUser));
+            return true;
         }
 
+        // Обработка нажатия кнопки со страницей розыгрыша
         if (query.getData().startsWith("raffle-page:")) {
             int page = Integer.parseInt(query.getData().replace("raffle-page:", ""));
-            Pageable pageable = PageRequest.of(page, Config.ITEM_ON_PAGE); // Пример создания Pageable
+            Pageable pageable = PageRequest.of(page, Config.ITEM_ON_PAGE);
             Page<Raffle> rafflesPage = winnerService.findAllByParticipantId(dbUser.getId(), pageable);
-
-            // Отправка меню пользователю
             BotUtil.editMessage(
                     bot,
                     query,
@@ -102,27 +108,11 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
                     false,
                     buildUserWinningsMenu(rafflesPage, dbUser)
             );
-        }
-        if (query.getData().equals("reward1")) {
-            userData.putIfAbsent(dbUser.getId(), new HashMap<>());
-            Pageable pageable = PageRequest.of(0, Config.ITEM_ON_PAGE);
-            List<Config.ServerConfig> servers = Config.getAvailableServers();
-            int start = Math.min((int) pageable.getOffset(), servers.size());
-            int end = Math.min((start + pageable.getPageSize()), servers.size());
-            Page<Config.ServerConfig> serversPage = new PageImpl<>(servers.subList(start, end), pageable, servers.size());
-            BotUtil.editMessage(
-                    bot,
-                    (Message) query.getMessage(),
-                    LocalizationService.getString("server.serverListMessage"),
-                    true,
-                    buildServerListMenu(serversPage, dbUserService.findUserById(query.getFrom().getId()))
-            );
-            // Устанавливаем состояние в "SERVER_CHOICE" после отправки списка серверов
-            userData.get(dbUser.getId()).put("state", "SERVER_CHOICE");
+            return true;
         }
 
-
-        if (query.getData().startsWith("server-name:") && userData.get(dbUser.getId()).get("state").equals("SERVER_CHOICE") ) {
+        // Обработка нажатия кнопки с выбором сервера
+        if (query.getData().startsWith("server-name:") && userData.get(dbUser.getId()).get("state").equals("SERVER_CHOICE")) {
             String serverName = query.getData().replace("server-name:", "");
             userData.get(dbUser.getId()).put("serverName", serverName);
             BotUtil.editMessage(
@@ -130,11 +120,13 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
                     (Message) query.getMessage(),
                     LocalizationService.getString("start.enterCharName"),
                     true,
-                    null);
+                    null
+            );
             userData.get(dbUser.getId()).put("state", "ENTER_CHAR_NAME");
             return true;
         }
 
+        // Обработка нажатия кнопки со страницей фильтрации серверов
         if (query.getData().startsWith("server-filter-page:")) {
             int page = Integer.parseInt(query.getData().replace("server-filter-page:", ""));
             Pageable pageable = PageRequest.of(page, Config.ITEM_ON_PAGE);
@@ -149,62 +141,111 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
                     true,
                     buildServerListMenu(serversPage, dbUserService.findUserById(query.getFrom().getId()))
             );
+            return true;
         }
+
         return false;
     }
 
+    /**
+     * Обрабатывает текстовые сообщения от пользователей
+     *
+     * @param bot     Экземпляр бота
+     * @param update  Обновление от Telegram
+     * @param message Сообщение от пользователя
+     * @return Возвращает true, если обработка завершена
+     * @throws TelegramApiException Исключение при работе с API Telegram
+     * @throws SQLException         Исключение при работе с базой данных
+     */
     @Override
     public boolean onMessage(AbstractTelegramBot bot, Update update, Message message) throws TelegramApiException, SQLException {
         DbUser dbUser = dbUserService.registerUser(message.getFrom());
+
+        // Обработка ввода имени персонажа
         if (userData.get(dbUser.getId()).get("state").equals("ENTER_CHAR_NAME")) {
             String charName = message.getText();
+
             if (charName == null || charName.isEmpty()) {
+                log.warn("Пользователь {} ввел пустое имя персонажа", dbUser.getId());
                 BotUtil.editMessage(bot, message, LocalizationService.getString("start.emptyField"), true, null);
                 resetState(dbUser.getId());
                 return true;
             }
-            Manager manager = null;
 
-
-            Config.switchServer(userData.get(dbUser.getId()).get("serverName"));
-            Config.ServerConfig currentServerConfig = Config.getCurrentServerConfig();
-            switch (currentServerConfig.serverType) {
-                case "Lucera2":
-                    manager = new Lucera2DbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
-                    break;
-                case "Pain":
-                    manager = new PainDbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
-                    break;
-                case "L2JEternity":
-                    manager = new EternityManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
-                    break;
-                default:
-                    log.error("Неизвестный тип сервера: " + currentServerConfig.serverType);
+            Manager manager = getManager();
+            if (manager == null) {
+                log.error("Не удалось создать менеджер для userId={}", dbUser.getId());
+                return true;
             }
 
-            if (Objects.requireNonNull(manager).getObjectIdByCharName(charName) == 0) {
+            if (manager.getObjectIdByCharName(charName) == 0) {
+                log.warn("Некорректное имя персонажа {} для userId={}", charName, dbUser.getId());
                 BotUtil.sendMessage(BotApplication.telegramBot, message, LocalizationService.getString("start.incorrectCharName"), false, false, null);
                 return true;
             }
-            List<Prize> prizeList = new ArrayList<>();
 
-            for (Prize prize : prizeList) {
-                if (prize.getType().equals(PrizeType.MONEY)) {
-                    BotUtil.sendMessage(BotApplication.telegramBot, message, String.format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
-                } else {
-                    BotUtil.sendMessage(BotApplication.telegramBot, message, String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
-                    manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
-                }
-            }
+            Raffle raffle = raffleService.getRaffleById(Long.valueOf(userData.get(dbUser.getId()).get("raffleId")));
+            log.info("Обработка призов для розыгрыша {} для userId={}", raffle.getId(), dbUser.getId());
+
+            processPrizes(bot, message,raffle, dbUser, charName, manager);
 
             resetState(dbUser.getId());
             return true;
         }
+
         return false;
     }
 
+    /**
+     * Возвращает экземпляр менеджера базы данных в зависимости от типа сервера
+     *
+     * @return Менеджер базы данных
+     */
+    private Manager getManager() throws SQLException {
+        Config.ServerConfig currentServerConfig = Config.getCurrentServerConfig();
+        switch (currentServerConfig.serverType) {
+            case "Lucera2":
+                return new Lucera2DbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+            case "Pain":
+                return new PainDbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+            case "L2JEternity":
+                return new EternityManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
+            default:
+                log.error("Неизвестный тип сервера: " + currentServerConfig.serverType);
+                return null;
+        }
+    }
+
+    /**
+     * Обрабатывает призы для розыгрыша
+     *
+     * @param raffle   Розыгрыш
+     * @param dbUser   Пользователь
+     * @param charName Имя персонажа
+     * @param manager  Менеджер базы данных
+     */
+    private void processPrizes(AbstractTelegramBot bot, Message message, Raffle raffle, DbUser dbUser, String charName, Manager manager) throws SQLException, TelegramApiException {
+        List<Prize> prizeList = raffle.getPrizes();
+        for (Prize prize : prizeList) {
+            if (prize.getType().equals(PrizeType.MONEY)) {
+                BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+            } else {
+                BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, mainMenu(dbUser));
+                manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
+            }
+            Winner winner = winnerService.findByPrizeIdAndParticipantId(prize.getId(), dbUser.getId());
+            winner.setGetPrize(true);
+            winnerService.update(winner);
+        }
+    }
+
+    /**
+     * Сбрасывает состояние пользователя
+     *
+     * @param userId Идентификатор пользователя
+     */
     private void resetState(Long userId) {
         userData.remove(userId);
-        log.info("Контекст очищен voteMenu");
+        log.info("Контекст очищен для userId={}", userId);
     }
 }

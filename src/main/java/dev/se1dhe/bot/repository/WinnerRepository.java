@@ -29,5 +29,8 @@ public interface WinnerRepository extends JpaRepository<Winner, Long> {
 
     Page<Winner> findAllByParticipantId(Long participantId, Pageable pageable);
 
+    List<Winner> findByParticipant(DbUser participant);
+
+
 
 }

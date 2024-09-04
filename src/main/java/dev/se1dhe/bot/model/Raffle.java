@@ -48,7 +48,7 @@ public class Raffle {
     private List<DbUser> participant = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "raffle_prize",
             joinColumns = {@JoinColumn(name = "raffle_id")},
             inverseJoinColumns = {@JoinColumn(name = "prize_id")})
