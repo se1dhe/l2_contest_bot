@@ -25,7 +25,7 @@ public class DbUser {
     private boolean getPrize;
     private String lang;
 
-    @ManyToMany(mappedBy = "participant")
+    @ManyToMany(mappedBy = "participant", fetch = FetchType.EAGER)
     private List<Raffle> raffles = new ArrayList<>();
     private int state;
 

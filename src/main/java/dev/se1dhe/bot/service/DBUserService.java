@@ -2,12 +2,14 @@ package dev.se1dhe.bot.service;
 
 
 import dev.se1dhe.bot.model.DbUser;
+import dev.se1dhe.bot.model.Raffle;
 import dev.se1dhe.bot.repository.DbUserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -75,6 +77,14 @@ public class DBUserService {
 
         final DbUser user = findUserById(id);
         return (user != null) && (user.getAccessLevel() >= level);
+    }
+
+    public List<Raffle> getRafflesByUserId(Long userId) {
+        DbUser user = dbUserRepository.findById(userId).orElse(null);
+        if (user != null) {
+            return user.getRaffles();
+        }
+        return null;
     }
 
 }

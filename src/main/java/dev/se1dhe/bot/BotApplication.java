@@ -54,6 +54,7 @@ public class BotApplication {
         telegramBot.addHandler(context.getBean(ContactHandler.class));
         telegramBot.addHandler(context.getBean(JoinHandler.class));
         telegramBot.addHandler(context.getBean(PrizeHandler.class));
+        telegramBot.addHandler(context.getBean(BonusHandler.class));
         telegramBot.addHandler(context.getBean(RewardHandler.class));
         printSystemInfo();
     }
