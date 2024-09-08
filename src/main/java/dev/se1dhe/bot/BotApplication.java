@@ -17,7 +17,6 @@ import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import java.io.IOException;
 import java.net.InetAddress;
 
 @SpringBootApplication
@@ -55,7 +54,6 @@ public class BotApplication {
         telegramBot.addHandler(context.getBean(JoinHandler.class));
         telegramBot.addHandler(context.getBean(PrizeHandler.class));
         telegramBot.addHandler(context.getBean(BonusHandler.class));
-        telegramBot.addHandler(context.getBean(RewardHandler.class));
         printSystemInfo();
     }
 

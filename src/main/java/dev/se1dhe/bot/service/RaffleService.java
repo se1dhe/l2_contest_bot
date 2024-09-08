@@ -6,6 +6,8 @@ import dev.se1dhe.bot.model.enums.RaffleType;
 import dev.se1dhe.bot.repository.DbUserRepository;
 import dev.se1dhe.bot.repository.RaffleRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -69,6 +71,11 @@ public class RaffleService {
                 dbUserRepository.save(user);    // Сохранение изменений в DbUser
             }
         }
+    }
+
+    // Добавьте этот метод в класс RaffleService
+    public Page<Raffle> findNonWinningRafflesByUser(DbUser dbUser, Pageable pageable) {
+        return raffleRepository.findNonWinningRafflesByUser(dbUser, pageable);
     }
 
 }

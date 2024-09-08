@@ -144,6 +144,58 @@ public class MainMenu {
                 .build();
     }
 
+    // Метод для создания меню с конкурсами, в которых пользователь участвовал, но не выиграл
+    public static InlineKeyboardMarkup buildNonWinningRafflesMenu(Page<Raffle> rafflesPage, DbUser dbUser) {
+        List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
+
+        // Добавляем кнопки для каждого конкурса, в котором пользователь не выиграл
+        rafflesPage.getContent().forEach(raffle -> {
+            InlineKeyboardButton raffleButton = InlineKeyboardButton.builder()
+                    .text(raffle.getName())
+                    .callbackData("bonus-raffle-details:" + raffle.getId())  // Исправлено
+                    .build();
+            InlineKeyboardRow row = new InlineKeyboardRow();
+            row.add(raffleButton);
+            keyboardRows.add(row);
+        });
+
+        // Добавляем кнопки для пагинации, если есть несколько страниц
+        if (rafflesPage.getTotalPages() > 1) {
+            InlineKeyboardRow paginationRow = new InlineKeyboardRow();
+
+            if (rafflesPage.hasPrevious()) {
+                paginationRow.add(InlineKeyboardButton.builder()
+                        .text(LocalizationService.getString("registerMenu.back", dbUser.getLang()))
+                        .callbackData("bonus-raffle-page:" + (rafflesPage.getNumber() - 1))
+                        .build());
+            }
+
+            if (rafflesPage.hasNext()) {
+                paginationRow.add(InlineKeyboardButton.builder()
+                        .text(LocalizationService.getString("registerMenu.forward", dbUser.getLang()))
+                        .callbackData("bonus-raffle-page:" + (rafflesPage.getNumber() + 1))
+                        .build());
+            }
+
+            keyboardRows.add(paginationRow);
+        }
+
+        // Кнопка возврата в основное меню
+        InlineKeyboardRow backRow = new InlineKeyboardRow();
+        backRow.add(InlineKeyboardButton.builder()
+                .text(LocalizationService.getString("mainMenu.button", dbUser.getLang()))
+                .callbackData("start-menu")
+                .build());
+
+        keyboardRows.add(backRow);
+
+        // Создаем и возвращаем клавиатуру
+        return InlineKeyboardMarkup.builder()
+                .keyboard(keyboardRows)
+                .build();
+    }
+
+
 
 }
 

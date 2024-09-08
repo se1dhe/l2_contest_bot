@@ -21,11 +21,7 @@ import utils.menu.MainMenu;
 @Log4j2
 public class ContactHandler implements ICallbackQueryHandler{
 
-    private final DBUserService dbUserService;
 
-    public ContactHandler(DBUserService dbUserService) {
-        this.dbUserService = dbUserService;
-    }
 
     @Override
     public boolean onCallbackQuery(AbstractTelegramBot bot, Update update, CallbackQuery query) throws TelegramApiException {

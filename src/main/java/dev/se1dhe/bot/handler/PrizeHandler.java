@@ -172,7 +172,7 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
                 return true;
             }
 
-            Manager manager = getManager();
+            Manager manager = getManager(userData.get(dbUser.getId()).get("serverName"));
             if (manager == null) {
                 log.error("Не удалось создать менеджер для userId={}", dbUser.getId());
                 return true;
@@ -197,23 +197,34 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
     }
 
     /**
-     * Возвращает экземпляр менеджера базы данных в зависимости от типа сервера
+     * Возвращает экземпляр менеджера базы данных в зависимости от выбранного пользователем сервера
      *
+     * @param serverName Название выбранного сервера
      * @return Менеджер базы данных
+     * @throws SQLException Исключение при работе с базой данных
      */
-    private Manager getManager() throws SQLException {
-        Config.ServerConfig currentServerConfig = Config.getCurrentServerConfig();
-        switch (currentServerConfig.serverType) {
-            case "Lucera2":
-                return new Lucera2DbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
-            case "Pain":
-                return new PainDbManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
-            case "L2JEternity":
-                return new EternityManager(currentServerConfig.url, currentServerConfig.username, currentServerConfig.password);
-            default:
-                log.error("Неизвестный тип сервера: " + currentServerConfig.serverType);
-                return null;
+    private Manager getManager(String serverName) throws SQLException {
+        Config.switchServer(serverName);
+        Config.ServerConfig selectedServerConfig = Config.getCurrentServerConfig();
+
+        if (selectedServerConfig == null) {
+            log.error("Не удалось найти конфигурацию для сервера: {}", serverName);
+            return null;
         }
+
+        log.info("Текущий сервер {}", selectedServerConfig.name);
+        return switch (selectedServerConfig.serverType) {
+            case "Lucera2" ->
+                    new Lucera2DbManager(selectedServerConfig.url, selectedServerConfig.username, selectedServerConfig.password);
+            case "Pain" ->
+                    new PainDbManager(selectedServerConfig.url, selectedServerConfig.username, selectedServerConfig.password);
+            case "L2JEternity" ->
+                    new EternityManager(selectedServerConfig.url, selectedServerConfig.username, selectedServerConfig.password);
+            default -> {
+                log.error("Неизвестный тип сервера: {}", selectedServerConfig.serverType);
+                yield null;
+            }
+        };
     }
 
     /**
