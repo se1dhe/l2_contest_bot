@@ -74,8 +74,10 @@ public class RaffleService {
     }
 
     // Добавьте этот метод в класс RaffleService
-    public Page<Raffle> findNonWinningRafflesByUser(DbUser dbUser, Pageable pageable) {
-        return raffleRepository.findNonWinningRafflesByUser(dbUser, pageable);
+    public Page<Raffle> findNonWinningRafflesByUser(DbUser dbUser, RaffleType type, Pageable pageable) {
+        return raffleRepository.findNonWinningRafflesByUserAndType(dbUser, type, pageable);
     }
+
+
 
 }

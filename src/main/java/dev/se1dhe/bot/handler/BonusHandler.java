@@ -4,6 +4,7 @@ import dev.se1dhe.bot.BotApplication;
 import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.model.DbUser;
 import dev.se1dhe.bot.model.Raffle;
+import dev.se1dhe.bot.model.enums.RaffleType;
 import dev.se1dhe.bot.service.*;
 import dev.se1dhe.bot.service.dbManager.EternityManager;
 import dev.se1dhe.bot.service.dbManager.Lucera2DbManager;
@@ -57,7 +58,7 @@ public class BonusHandler implements ICallbackQueryHandler, IMessageHandler {
 
         if (query.getData().equals("bonus")) {
             Pageable pageable = PageRequest.of(0, Config.ITEM_ON_PAGE);
-            Page<Raffle> rafflesPage = raffleService.findNonWinningRafflesByUser(dbUser, pageable);
+            Page<Raffle> rafflesPage = raffleService.findNonWinningRafflesByUser(dbUser, RaffleType.ENDED,pageable);
             BotUtil.editMessage(
                     bot,
                     query,

@@ -18,7 +18,8 @@ public interface RaffleRepository extends JpaRepository<Raffle, Long> {
 
     Raffle findByName(String raffleName);
 
-    @Query("SELECT r FROM Raffle r JOIN r.participant p WHERE p = :user AND NOT EXISTS (SELECT w FROM Winner w WHERE w.raffle = r AND w.participant = p)")
-    Page<Raffle> findNonWinningRafflesByUser(DbUser user, Pageable pageable);
+    @Query("SELECT r FROM Raffle r JOIN r.participant p WHERE p = :user AND NOT EXISTS (SELECT w FROM Winner w WHERE w.raffle = r AND w.participant = p) AND r.type = :type")
+    Page<Raffle> findNonWinningRafflesByUserAndType(DbUser user, RaffleType type, Pageable pageable);
+
 
 }
