@@ -24,7 +24,7 @@ public class PainDbManager extends Manager {
             statement.setInt(4, count);
             statement.setInt(5, 0); // enchant
             statement.setInt(6, 0); // life_time
-            statement.setInt(7, 1); // given
+            statement.setInt(7, 0); // given
 
             statement.executeUpdate();
         }
