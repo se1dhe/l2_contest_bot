@@ -7,10 +7,7 @@ import dev.se1dhe.bot.model.Prize;
 import dev.se1dhe.bot.model.Raffle;
 import dev.se1dhe.bot.model.Winner;
 import dev.se1dhe.bot.model.enums.PrizeType;
-import dev.se1dhe.bot.service.DBUserService;
-import dev.se1dhe.bot.service.LocalizationService;
-import dev.se1dhe.bot.service.RaffleService;
-import dev.se1dhe.bot.service.WinnerService;
+import dev.se1dhe.bot.service.*;
 import dev.se1dhe.bot.service.dbManager.EternityManager;
 import dev.se1dhe.bot.service.dbManager.Lucera2DbManager;
 import dev.se1dhe.bot.service.dbManager.Manager;
@@ -43,11 +40,13 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
     private final WinnerService winnerService;
     private final RaffleService raffleService;
     private final Map<Long, Map<String, String>> userData = new HashMap<>();
+    private final PrizeService prizeService;
 
-    public PrizeHandler(DBUserService dbUserService, WinnerService winnerService, RaffleService raffleService) {
+    public PrizeHandler(DBUserService dbUserService, WinnerService winnerService, RaffleService raffleService, PrizeService prizeService) {
         this.dbUserService = dbUserService;
         this.winnerService = winnerService;
         this.raffleService = raffleService;
+        this.prizeService = prizeService;
     }
 
     /**
@@ -236,18 +235,26 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
      * @param manager  Менеджер базы данных
      */
     private void processPrizes(AbstractTelegramBot bot, Message message, Raffle raffle, DbUser dbUser, String charName, Manager manager) throws SQLException, TelegramApiException {
-        List<Prize> prizeList = raffle.getPrizes();
-        for (Prize prize : prizeList) {
-            if (prize.getType().equals(PrizeType.MONEY)) {
-                BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
-            } else {
-                BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, mainMenu(dbUser));
-                manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
-            }
-            Winner winner = winnerService.findByPrizeIdAndParticipantId(prize.getId(), dbUser.getId());
-            winner.setGetPrize(true);
-            winnerService.update(winner);
+        if (prizeService.getPrizesByRaffle(raffle).isEmpty()) {
+            BotUtil.sendMessage(bot, message, "Произошла ошибка! Сообщите администратору!", false, false, null);
         }
+        else {
+            List<Prize> prizeList = raffle.getPrizes();
+            for (Prize prize : prizeList) {
+                if(winnerService.findByPrizeIdAndParticipantId(prize.getId(), dbUser.getId())!=null) {
+                    Winner winner = winnerService.findByPrizeIdAndParticipantId(prize.getId(), dbUser.getId());
+                    winner.setGetPrize(true);
+                    if (prize.getType().equals(PrizeType.MONEY)) {
+                        BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
+                    } else {
+                        BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.itemCongratulation"), prize.getCount(), prize.getItemName()), false, false, mainMenu(dbUser));
+                        manager.addItem(manager.getObjectIdByCharName(charName), prize.getItemId(), prize.getCount());
+                    }
+                    winnerService.update(winner);
+                }
+            }
+        }
+
     }
 
     /**

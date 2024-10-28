@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Prizes>
     <prize place="1">
-        <type>MONEY</type>
-        <count>200</count>
-        <itemName>RUB</itemName>
-        <itemId>4037</itemId>
-    </prize>
-    <prize place="2">
         <type>ITEM</type>
         <count>200</count>
         <itemName>COL</itemName>

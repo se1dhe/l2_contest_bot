@@ -81,8 +81,11 @@ public class UpdateService {
                         raffleService.update(raffle);
                     }
                 }
+
             }
         }
+
+
     }
 
     private void delayEnd (AbstractTelegramBot bot) throws TelegramApiException {
@@ -110,10 +113,14 @@ public class UpdateService {
                             winnerService.delete(winner);
                         }
                         raffleService.deleteRaffleById(raffle.getId());
+                        for (Winner winner : winnerService.findByRaffle(raffle)) {
+                            winnerService.delete(winner);
+                        }
                         log.info("Удален конкурс {}", raffle.getName());
                     }
                 }
             }
+
         }
     }
 
