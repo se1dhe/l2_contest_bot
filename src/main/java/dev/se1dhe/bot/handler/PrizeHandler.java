@@ -162,7 +162,7 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
             }
 
             Raffle raffle = raffleService.getRaffleById(Long.valueOf(userData.get(dbUser.getId()).get("raffleId")));
-            log.info("Обработка призов для розыгрыша {} для userId={}", raffle.getId(), dbUser.getId());
+            log.info("Обработка призов для розыгрыша с ид {} для userId {}", raffle.getId(), dbUser.getId());
             log.info("Пользователь {} ввел ник игрового персонажа: {}", dbUser.getId(), charName);
 
             processPrizes(bot, message, raffle, dbUser, charName, manager);
@@ -207,7 +207,7 @@ public class PrizeHandler implements ICallbackQueryHandler, IMessageHandler {
                 Winner winner = winnerService.findByPrizeIdAndParticipantId(prize.getId(), dbUser.getId());
                 if (winner != null) {
                     winner.setGetPrize(true);
-                    log.info("Выдача приза {} пользователю {} на сервере {} для игрового персонажа {}", prize.getItemName(), dbUser.getId(),userData.get(dbUser.getId()).get("SERVER_CHOICE"), charName);
+                    log.info("Выдача приза {} пользователю {}  для игрового персонажа {}", prize.getItemName(), dbUser.getId(), charName);
                     if (prize.getType().equals(PrizeType.MONEY)) {
                         BotUtil.sendMessage(bot, message, String.format(LocalizationService.getString("start.moneyCongratulation"), prize.getCount(), prize.getItemName()), false, false, null);
                     } else {

@@ -12,6 +12,7 @@ import dev.se1dhe.bot.service.RaffleService;
 import dev.se1dhe.core.bots.AbstractTelegramBot;
 import dev.se1dhe.core.handlers.ICallbackQueryHandler;
 import dev.se1dhe.core.util.BotUtil;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import static utils.Util.getEmoji;
 
 @Service
+@Log4j2
 public class JoinHandler implements ICallbackQueryHandler {
 
     private final RaffleService raffleService;
@@ -62,6 +64,7 @@ public class JoinHandler implements ICallbackQueryHandler {
             }
             raffle.getParticipant().add(dbUser);
             raffleService.update(raffle);
+            log.info("Пользователь {} зарегистрирован в конкурсе {}", dbUser.getId(), raffle.getId());
             BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.successful"),Util.dateTimeParser(raffle.getRaffleResultDate())), false);
             Message message = (Message) query.getMessage();
             if (!message.hasPhoto()) {
