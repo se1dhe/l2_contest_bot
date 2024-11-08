@@ -1,0 +1,574 @@
+2024-11-08 06:42:02,356 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 7564 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 06:42:02,358 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 06:42:02,774 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 06:42:02,941 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 158 ms. Found 5 JPA repository interfaces.
+2024-11-08 06:42:03,192 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 06:42:07,395 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 06:42:07,458 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 06:42:07,492 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 06:42:07,790 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 06:42:11,824 WARN org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator [main] HHH000342: Could not obtain connection to query metadata
+java.lang.NullPointerException: Cannot invoke "org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(java.sql.SQLException, String)" because the return value of "org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.sqlExceptionHelper()" is null
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:116)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:290)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:123)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:77)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215)
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:221)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:189)
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1431)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1502)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1833)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at dev.se1dhe.bot.BotApplication.main(BotApplication.java:38)
+2024-11-08 06:42:11,826 ERROR org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Failed to initialize JPA EntityManagerFactory: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+2024-11-08 06:42:11,827 WARN org.springframework.context.support.AbstractApplicationContext [main] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+2024-11-08 06:42:11,833 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger [main] 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-11-08 06:42:11,851 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1786)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at dev.se1dhe.bot.BotApplication.main(BotApplication.java:38)
+Caused by: org.hibernate.service.spi.ServiceException: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:276)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215)
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:221)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:189)
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1431)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1502)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1833)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782)
+	... 14 common frames omitted
+Caused by: org.hibernate.HibernateException: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+	at org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl.determineDialect(DialectFactoryImpl.java:191)
+	at org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl.buildDialect(DialectFactoryImpl.java:87)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentWithDefaults(JdbcEnvironmentInitiator.java:152)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:362)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:123)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:77)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263)
+	... 29 common frames omitted
+2024-11-08 06:43:54,396 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 9432 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 06:43:54,398 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 06:43:54,819 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 06:43:54,977 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 151 ms. Found 5 JPA repository interfaces.
+2024-11-08 06:43:55,231 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 06:43:59,550 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 06:43:59,600 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 06:43:59,627 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 06:43:59,866 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 06:44:03,908 WARN org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator [main] HHH000342: Could not obtain connection to query metadata
+java.lang.NullPointerException: Cannot invoke "org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(java.sql.SQLException, String)" because the return value of "org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.sqlExceptionHelper()" is null
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:116)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:290)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:123)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:77)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215)
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:221)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:189)
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1431)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1502)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1833)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at dev.se1dhe.bot.BotApplication.main(BotApplication.java:38)
+2024-11-08 06:44:03,911 ERROR org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Failed to initialize JPA EntityManagerFactory: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+2024-11-08 06:44:03,911 WARN org.springframework.context.support.AbstractApplicationContext [main] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+2024-11-08 06:44:03,918 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger [main] 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-11-08 06:44:03,931 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1786)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at dev.se1dhe.bot.BotApplication.main(BotApplication.java:38)
+Caused by: org.hibernate.service.spi.ServiceException: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:276)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215)
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:221)
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:189)
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1431)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1502)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1833)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1782)
+	... 14 common frames omitted
+Caused by: org.hibernate.HibernateException: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+	at org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl.determineDialect(DialectFactoryImpl.java:191)
+	at org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl.buildDialect(DialectFactoryImpl.java:87)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentWithDefaults(JdbcEnvironmentInitiator.java:152)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:362)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:123)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:77)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263)
+	... 29 common frames omitted
+2024-11-08 06:44:49,908 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 13716 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 06:44:49,909 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 06:44:50,286 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 06:44:50,434 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 140 ms. Found 5 JPA repository interfaces.
+2024-11-08 06:44:50,656 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 06:44:50,898 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 06:44:50,946 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 06:44:50,978 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 06:44:51,240 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 06:44:52,410 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 06:44:52,850 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:44:53,198 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 06:44:53,973 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 4.351 seconds (process running for 5.122)
+2024-11-08 06:44:54,783 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 06:44:54,785 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 06:44:54,789 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 06:44:54,789 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 06:44:54,789 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 06:44:54,790 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 06:44:54,790 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 06:44:54,790 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:44:54,791 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 06:44:54,791 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 71 MB
+2024-11-08 06:44:54,791 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:44:58,703 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 356 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:02,961 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 731 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:08,359 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 1348 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:14,856 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 1589 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:19,870 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 1518 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:29,526 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 5062 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:34,425 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 06:45:34,426 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:45:36,771 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 12872 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 06:45:36,773 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 06:45:37,145 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 06:45:37,274 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 120 ms. Found 5 JPA repository interfaces.
+2024-11-08 06:45:37,492 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 06:45:37,724 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 06:45:37,770 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 06:45:37,800 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 06:45:38,058 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 06:45:39,158 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 06:45:39,248 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:45:39,562 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 06:45:40,283 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.772 seconds (process running for 4.505)
+2024-11-08 06:45:40,913 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 06:45:40,915 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 06:45:40,919 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 53 MB
+2024-11-08 06:45:40,920 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:45:44,084 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 363 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:45:56,522 ERROR org.telegram.telegrambots.longpolling.BotSession [pool-1-thread-1] Error received from Telegram GetUpdates Request, retrying in 1017 millis...
+org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: null
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:156)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:103)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.telegram.telegrambots.longpolling.exceptions.TelegramApiErrorResponseException: 
+	at org.telegram.telegrambots.longpolling.BotSession.getUpdatesFromTelegram(BotSession.java:152)
+	... 7 common frames omitted
+2024-11-08 06:46:01,872 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 06:46:01,873 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:46:04,090 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 16268 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 06:46:04,091 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 06:46:04,462 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 06:46:04,597 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 126 ms. Found 5 JPA repository interfaces.
+2024-11-08 06:46:04,816 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 06:46:05,038 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 06:46:05,082 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 06:46:05,108 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 06:46:05,359 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 06:46:06,499 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 06:46:06,581 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:46:06,910 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 06:46:07,642 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.815 seconds (process running for 4.543)
+2024-11-08 06:46:08,292 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 06:46:08,294 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 06:46:08,298 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 06:46:08,298 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 55 MB
+2024-11-08 06:46:08,299 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:46:10,896 INFO dev.se1dhe.bot.service.DBUserService [pool-1-thread-1] Пользователь успешно зарегистрирован: se1dhe
+2024-11-08 06:46:41,017 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 06:46:41,018 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:46:43,248 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 14180 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 06:46:43,250 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 06:46:43,626 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 06:46:43,753 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 121 ms. Found 5 JPA repository interfaces.
+2024-11-08 06:46:43,970 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 06:46:44,192 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 06:46:44,234 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 06:46:44,261 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 06:46:44,510 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 06:46:45,557 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 06:46:45,634 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 06:46:45,940 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 06:46:46,657 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.674 seconds (process running for 4.406)
+2024-11-08 06:46:47,295 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 06:46:47,297 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 06:46:47,301 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 06:46:47,301 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 39 MB
+2024-11-08 06:46:47,302 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 06:47:23,658 INFO dev.se1dhe.bot.service.DBUserService [pool-1-thread-1] Пользователь успешно зарегистрирован: dev.se1dhe
+2024-11-08 07:04:51,688 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Пользователь 1259547081 выбрал сервер: [dev.se1dhe.bot.config.Config$ServerConfig@62bdc7f6, dev.se1dhe.bot.config.Config$ServerConfig@23d85c26, dev.se1dhe.bot.config.Config$ServerConfig@5c555d27, dev.se1dhe.bot.config.Config$ServerConfig@6e9c47c9]
+2024-11-08 07:05:43,179 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 07:05:43,181 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:05:47,849 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 9196 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 07:05:47,852 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 07:05:48,256 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 07:05:48,388 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 125 ms. Found 5 JPA repository interfaces.
+2024-11-08 07:05:48,620 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 07:05:48,840 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 07:05:48,883 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 07:05:48,909 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 07:05:49,168 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 07:05:50,192 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 07:05:50,272 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:05:50,588 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 07:05:51,298 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.723 seconds (process running for 4.487)
+2024-11-08 07:05:51,908 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 07:05:51,910 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:05:51,914 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 07:05:51,915 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 67 MB
+2024-11-08 07:05:51,915 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:06:30,448 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 07:06:30,450 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:06:33,018 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 13432 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 07:06:33,021 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 07:06:33,401 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 07:06:33,533 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 125 ms. Found 5 JPA repository interfaces.
+2024-11-08 07:06:33,772 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 07:06:33,998 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 07:06:34,041 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 07:06:34,066 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 07:06:34,325 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 07:06:35,358 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 07:06:35,440 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:06:35,743 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 07:06:36,443 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.702 seconds (process running for 4.425)
+2024-11-08 07:06:37,070 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 07:06:37,071 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 07:06:37,076 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 07:06:37,076 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 67 MB
+2024-11-08 07:06:37,077 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:07:29,838 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Пользователь 1259547081 выбрал сервер: null
+2024-11-08 07:07:43,091 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 07:07:43,093 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:07:47,712 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 16028 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 07:07:47,715 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 07:07:48,115 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 07:07:48,252 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 130 ms. Found 5 JPA repository interfaces.
+2024-11-08 07:07:48,470 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 07:07:48,712 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 07:07:48,756 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 07:07:48,784 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 07:07:49,032 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 07:07:50,068 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 07:07:50,148 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:07:50,449 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 07:07:51,145 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.705 seconds (process running for 4.461)
+2024-11-08 07:07:51,774 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 07:07:51,775 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 07:07:51,779 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 52 MB
+2024-11-08 07:07:51,780 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:07:58,888 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Пользователь 1259547081 выбрал сервер: Laura x80
+2024-11-08 07:08:05,429 INFO dev.se1dhe.bot.config.Config [pool-1-thread-1] Переключились на сервер: Laura x80
+2024-11-08 07:08:05,429 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Текущий сервер Laura x80
+2024-11-08 07:08:05,483 WARN dev.se1dhe.core.bots.AbstractTelegramBot [pool-1-thread-1] Exception caught on handler: PrizeHandler, message: Message(messageId=38256, messageThreadId=null, from=User(id=1259547081, firstName=se1dhe, isBot=false, lastName=null, userName=se1dhe, languageCode=ru, canJoinGroups=null, canReadAllGroupMessages=null, supportInlineQueries=null, isPremium=true, addedToAttachmentMenu=null, canConnectToBusiness=null, hasMainWebApp=null), date=1731042486, chat=Chat(id=1259547081, type=private, title=null, firstName=se1dhe, lastName=null, userName=se1dhe, isForum=null), forwardFrom=null, forwardFromChat=null, forwardDate=null, text=test, entities=null, captionEntities=null, audio=null, document=null, photo=null, sticker=null, video=null, contact=null, location=null, venue=null, animation=null, pinnedMessage=null, newChatMembers=[], leftChatMember=null, newChatTitle=null, newChatPhoto=null, deleteChatPhoto=null, groupchatCreated=null, replyToMessage=null, voice=null, caption=null, superGroupCreated=null, channelChatCreated=null, migrateToChatId=null, migrateFromChatId=null, editDate=null, game=null, forwardFromMessageId=null, invoice=null, successfulPayment=null, videoNote=null, authorSignature=null, forwardSignature=null, mediaGroupId=null, connectedWebsite=null, passportData=null, forwardSenderName=null, poll=null, replyMarkup=null, dice=null, viaBot=null, senderChat=null, proximityAlertTriggered=null, messageAutoDeleteTimerChanged=null, isAutomaticForward=null, hasProtectedContent=null, webAppData=null, videoChatStarted=null, videoChatEnded=null, videoChatParticipantsInvited=null, videoChatScheduled=null, isTopicMessage=null, forumTopicCreated=null, forumTopicClosed=null, forumTopicReopened=null, forumTopicEdited=null, generalForumTopicHidden=null, generalForumTopicUnhidden=null, writeAccessAllowed=null, hasMediaSpoiler=null, userShared=null, chatShared=null, story=null, externalReplyInfo=null, forwardOrigin=null, linkPreviewOptions=null, quote=null, usersShared=null, giveawayCreated=null, giveaway=null, giveawayWinners=null, giveawayCompleted=null, replyToStory=null, boostAdded=null, senderBoostCount=null, businessConnectionId=null, senderBusinessBot=null, isFromOffline=null, chatBackgroundSet=null, effectId=null, showCaptionAboveMedia=null, paidMedia=null, refundedPayment=null)
+java.sql.SQLSyntaxErrorException: Unknown database 'l2server'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:815)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:438)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:241)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:189)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:230)
+	at dev.se1dhe.bot.service.dbManager.Lucera2DbManager.getConnection(Lucera2DbManager.java:14)
+	at dev.se1dhe.bot.service.dbManager.Manager.<init>(Manager.java:13)
+	at dev.se1dhe.bot.service.dbManager.Lucera2DbManager.<init>(Lucera2DbManager.java:9)
+	at dev.se1dhe.bot.handler.PrizeHandler.getManager(PrizeHandler.java:189)
+	at dev.se1dhe.bot.handler.PrizeHandler.onMessage(PrizeHandler.java:152)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.handleIncomingMessage(AbstractTelegramBot.java:303)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.processUpdate(AbstractTelegramBot.java:162)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.consume(AbstractTelegramBot.java:74)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:116)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-11-08 07:08:05,510 WARN dev.se1dhe.core.bots.AbstractTelegramBot [pool-1-thread-1] Exception caught on handler: BonusHandler, message: Message(messageId=38256, messageThreadId=null, from=User(id=1259547081, firstName=se1dhe, isBot=false, lastName=null, userName=se1dhe, languageCode=ru, canJoinGroups=null, canReadAllGroupMessages=null, supportInlineQueries=null, isPremium=true, addedToAttachmentMenu=null, canConnectToBusiness=null, hasMainWebApp=null), date=1731042486, chat=Chat(id=1259547081, type=private, title=null, firstName=se1dhe, lastName=null, userName=se1dhe, isForum=null), forwardFrom=null, forwardFromChat=null, forwardDate=null, text=test, entities=null, captionEntities=null, audio=null, document=null, photo=null, sticker=null, video=null, contact=null, location=null, venue=null, animation=null, pinnedMessage=null, newChatMembers=[], leftChatMember=null, newChatTitle=null, newChatPhoto=null, deleteChatPhoto=null, groupchatCreated=null, replyToMessage=null, voice=null, caption=null, superGroupCreated=null, channelChatCreated=null, migrateToChatId=null, migrateFromChatId=null, editDate=null, game=null, forwardFromMessageId=null, invoice=null, successfulPayment=null, videoNote=null, authorSignature=null, forwardSignature=null, mediaGroupId=null, connectedWebsite=null, passportData=null, forwardSenderName=null, poll=null, replyMarkup=null, dice=null, viaBot=null, senderChat=null, proximityAlertTriggered=null, messageAutoDeleteTimerChanged=null, isAutomaticForward=null, hasProtectedContent=null, webAppData=null, videoChatStarted=null, videoChatEnded=null, videoChatParticipantsInvited=null, videoChatScheduled=null, isTopicMessage=null, forumTopicCreated=null, forumTopicClosed=null, forumTopicReopened=null, forumTopicEdited=null, generalForumTopicHidden=null, generalForumTopicUnhidden=null, writeAccessAllowed=null, hasMediaSpoiler=null, userShared=null, chatShared=null, story=null, externalReplyInfo=null, forwardOrigin=null, linkPreviewOptions=null, quote=null, usersShared=null, giveawayCreated=null, giveaway=null, giveawayWinners=null, giveawayCompleted=null, replyToStory=null, boostAdded=null, senderBoostCount=null, businessConnectionId=null, senderBusinessBot=null, isFromOffline=null, chatBackgroundSet=null, effectId=null, showCaptionAboveMedia=null, paidMedia=null, refundedPayment=null)
+java.lang.NullPointerException: Cannot invoke "java.util.Map.get(Object)" because the return value of "java.util.Map.get(Object)" is null
+	at dev.se1dhe.bot.handler.BonusHandler.onMessage(BonusHandler.java:128)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.handleIncomingMessage(AbstractTelegramBot.java:303)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.processUpdate(AbstractTelegramBot.java:162)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.consume(AbstractTelegramBot.java:74)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:116)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-11-08 07:08:26,224 INFO org.springframework.statemachine.support.LifecycleObjectSupport [SpringApplicationShutdownHook] destroy called
+2024-11-08 07:08:26,226 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:50:38,608 INFO org.springframework.boot.StartupInfoLogger [main] Starting BotApplication using Java 21.0.1 with PID 15528 (D:\project\l2_contest_bot\target\classes started by a0wk1 in D:\project\l2_contest_bot)
+2024-11-08 07:50:38,610 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2024-11-08 07:50:38,987 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-08 07:50:39,117 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 123 ms. Found 5 JPA repository interfaces.
+2024-11-08 07:50:39,343 WARN org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2024-11-08 07:50:39,562 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-08 07:50:39,606 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-11-08 07:50:39,632 INFO org.hibernate.cache.internal.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2024-11-08 07:50:39,893 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-08 07:50:40,952 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-08 07:50:41,028 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-08 07:50:41,332 INFO org.springframework.data.jpa.repository.query.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-08 07:50:42,040 INFO org.springframework.boot.StartupInfoLogger [main] Started BotApplication in 3.713 seconds (process running for 4.46)
+2024-11-08 07:50:42,666 INFO org.telegram.telegrambots.longpolling.BotSession [main] Result when calling deleteWebhook: true
+2024-11-08 07:50:42,667 INFO dev.se1dhe.bot.BotApplication [main] === Информация о проекте ===
+2024-11-08 07:50:42,671 INFO dev.se1dhe.bot.BotApplication [main] Автор проекта: se1dhe [t.me/se1dhe] [se1dhe.dev]
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] Название проекта: @se1dhe_bot
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] Версия проекта: 21.0.1
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] Используемая JVM: Java HotSpot(TM) 64-Bit Server VM
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] Операционная система: Windows 11
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] IP-адрес сервера: 192.168.1.102
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] Использовано ОЗУ: 51 MB
+2024-11-08 07:50:42,672 INFO dev.se1dhe.bot.BotApplication [main] === ====
+2024-11-08 08:03:06,515 INFO dev.se1dhe.bot.handler.JoinHandler [pool-1-thread-1] Пользователь 1259547081 зарегистрирован в конкурсе 2
+2024-11-08 08:04:34,452 INFO dev.se1dhe.bot.config.Config [pool-1-thread-1] Переключились на сервер: Laura x80
+2024-11-08 08:04:34,497 WARN dev.se1dhe.core.bots.AbstractTelegramBot [pool-1-thread-1] Exception caught on handler: PrizeHandler, message: Message(messageId=38265, messageThreadId=null, from=User(id=1259547081, firstName=se1dhe, isBot=false, lastName=null, userName=se1dhe, languageCode=ru, canJoinGroups=null, canReadAllGroupMessages=null, supportInlineQueries=null, isPremium=true, addedToAttachmentMenu=null, canConnectToBusiness=null, hasMainWebApp=null), date=1731045875, chat=Chat(id=1259547081, type=private, title=null, firstName=se1dhe, lastName=null, userName=se1dhe, isForum=null), forwardFrom=null, forwardFromChat=null, forwardDate=null, text=ваыаы, entities=null, captionEntities=null, audio=null, document=null, photo=null, sticker=null, video=null, contact=null, location=null, venue=null, animation=null, pinnedMessage=null, newChatMembers=[], leftChatMember=null, newChatTitle=null, newChatPhoto=null, deleteChatPhoto=null, groupchatCreated=null, replyToMessage=null, voice=null, caption=null, superGroupCreated=null, channelChatCreated=null, migrateToChatId=null, migrateFromChatId=null, editDate=null, game=null, forwardFromMessageId=null, invoice=null, successfulPayment=null, videoNote=null, authorSignature=null, forwardSignature=null, mediaGroupId=null, connectedWebsite=null, passportData=null, forwardSenderName=null, poll=null, replyMarkup=null, dice=null, viaBot=null, senderChat=null, proximityAlertTriggered=null, messageAutoDeleteTimerChanged=null, isAutomaticForward=null, hasProtectedContent=null, webAppData=null, videoChatStarted=null, videoChatEnded=null, videoChatParticipantsInvited=null, videoChatScheduled=null, isTopicMessage=null, forumTopicCreated=null, forumTopicClosed=null, forumTopicReopened=null, forumTopicEdited=null, generalForumTopicHidden=null, generalForumTopicUnhidden=null, writeAccessAllowed=null, hasMediaSpoiler=null, userShared=null, chatShared=null, story=null, externalReplyInfo=null, forwardOrigin=null, linkPreviewOptions=null, quote=null, usersShared=null, giveawayCreated=null, giveaway=null, giveawayWinners=null, giveawayCompleted=null, replyToStory=null, boostAdded=null, senderBoostCount=null, businessConnectionId=null, senderBusinessBot=null, isFromOffline=null, chatBackgroundSet=null, effectId=null, showCaptionAboveMedia=null, paidMedia=null, refundedPayment=null)
+java.sql.SQLSyntaxErrorException: Unknown database 'l2server'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:815)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:438)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:241)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:189)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:230)
+	at dev.se1dhe.bot.service.dbManager.Lucera2DbManager.getConnection(Lucera2DbManager.java:14)
+	at dev.se1dhe.bot.service.dbManager.Manager.<init>(Manager.java:13)
+	at dev.se1dhe.bot.service.dbManager.Lucera2DbManager.<init>(Lucera2DbManager.java:9)
+	at dev.se1dhe.bot.handler.PrizeHandler.getManager(PrizeHandler.java:189)
+	at dev.se1dhe.bot.handler.PrizeHandler.onMessage(PrizeHandler.java:152)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.handleIncomingMessage(AbstractTelegramBot.java:303)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.processUpdate(AbstractTelegramBot.java:162)
+	at dev.se1dhe.core.bots.AbstractTelegramBot.consume(AbstractTelegramBot.java:74)
+	at org.telegram.telegrambots.longpolling.BotSession.lambda$createPollerTask$1(BotSession.java:116)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:358)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
