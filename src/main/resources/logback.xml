@@ -9,20 +9,34 @@
         </encoder>
     </appender>
 
-    <!-- Rolling File Appender -->
+    <!-- Rolling File Appender for all logs -->
     <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/log.txt</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%d %p %C [%t] %m%n</pattern>
         </encoder>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOGS}/archived/log-%d{yyyy-MM-dd-HH}-%i.log.gz</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/log-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
     </appender>
+
+    <!-- Rolling File Appender for PrizeHandler logs -->
+    <appender name="PrizeHandlerFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/prizeHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %p %C [%t] %m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/prizeHandler-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Logger for PrizeHandler class -->
+    <logger name="PrizeHandler" level="INFO" additivity="false">
+        <appender-ref ref="PrizeHandlerFile" />
+    </logger>
 
     <!-- Root Logger -->
     <root level="INFO">
