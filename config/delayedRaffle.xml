@@ -4,13 +4,19 @@
     <siteUrl>se1dhe.dev</siteUrl>
     <channelForSub>@test0_1_se1dhe</channelForSub>
     <raffleType>ENDED</raffleType>
-    <startDate>08.11.2024 08:03</startDate>
-    <endDate>08.11.2024 08:04</endDate>
+    <startDate>12.11.2024 08:03</startDate>
+    <endDate>12.11.2024 08:04</endDate>
     <imgPath>img/delayedRaffle/1.jpg</imgPath>
     <Prizes>
         <prize place="1">
             <type>ITEM</type>
             <count>200</count>
+            <itemName>COL</itemName>
+            <itemId>4037</itemId>
+        </prize>
+        <prize place="2">
+            <type>ITEM</type>
+            <count>20</count>
             <itemName>COL</itemName>
             <itemId>4037</itemId>
         </prize>

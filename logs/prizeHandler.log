@@ -1,2 +1,9 @@
 2024-11-08 08:04:31,689 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Пользователь 1259547081 выбрал сервер: Laura x80
 2024-11-08 08:04:34,453 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Текущий сервер Laura x80
+2024-11-12 08:09:12,842 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Пользователь 1259547081 выбрал сервер: Laura x80
+2024-11-12 08:09:18,546 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Текущий сервер Laura x80
+2024-11-12 08:09:18,582 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Обработка призов для розыгрыша с ид 4 для userId 1259547081
+2024-11-12 08:09:18,582 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Пользователь 1259547081 ввел ник игрового персонажа: test
+2024-11-12 08:09:18,595 WARN dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Объект winner оказался null для prizeId=102 и userId=1259547081
+2024-11-12 08:09:18,601 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Выдача приза COL пользователю 1259547081  для игрового персонажа test
+2024-11-12 08:09:18,810 INFO dev.se1dhe.bot.handler.PrizeHandler [pool-1-thread-1] Контекст очищен для userId=1259547081
