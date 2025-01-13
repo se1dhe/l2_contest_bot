@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 
 @Log4j2
@@ -21,7 +22,7 @@ public class Util {
 
     public static String getEmoji(int number) {
         String[] num = new String[]{"1️⃣ ", "\n2️⃣ ", "\n3️⃣ ", "\n4️⃣ ", "\n5️⃣ ", "\n6️⃣ ", "\n7️⃣ ", "\n8️⃣ ", "\n9️⃣ ", "\n\uD83D\uDD1F ", "\n1️⃣1️⃣ ", "\n1️⃣2️⃣ ", "\n1️⃣3️⃣ ", "\n1️⃣4️⃣ ", "\n1️⃣5️⃣ ", "\n1️⃣6️⃣ ", "\n1️⃣7️⃣ ", "\n1️⃣8️⃣ ", "\n1️⃣9️⃣ ", "\n2️⃣0️⃣ "};
-        return num[number-1];
+        return num[number - 1];
     }
 
     public static LocalDateTime parseDateTime(String dateTimeString) {
@@ -29,7 +30,7 @@ public class Util {
         return LocalDateTime.parse(dateTimeString, formatter);
     }
 
-    public  static boolean isMember(AbstractTelegramBot bot, String channel, long userId) {
+    public static boolean isMember(AbstractTelegramBot bot, String channel, long userId) {
         GetChatMember member = new GetChatMember(channel, userId);
         try {
             ChatMember res = bot.execute(member);
@@ -39,7 +40,7 @@ public class Util {
                 return true;
             }
         } catch (TelegramApiException e) {
-            log.warn("no access {}" , channel);
+            log.warn("no access {}", channel);
         }
         return false;
     }
@@ -56,4 +57,28 @@ public class Util {
         }
         return text.replace("!", "\\!");
     }
+
+        /**
+         * Генерирует код в формате ****-****, где * - шестнадцатеричная цифра (0-9, a-f).
+         *
+         * @return Сгенерированный код в виде строки.
+         */
+        public static String generateCode() {
+            Random random = new Random();
+            StringBuilder code = new StringBuilder();
+
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 4; j++) {
+                    // Генерируем случайную шестнадцатеричную цифру
+                    int hexDigit = random.nextInt(16);
+                    code.append(Integer.toHexString(hexDigit));
+                }
+                if (i < 1) {
+                    code.append("-");
+                }
+            }
+
+            return code.toString();
+        }
+
 }
