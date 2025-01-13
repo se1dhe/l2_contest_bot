@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import utils.KeyboardBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,26 @@ public class MainMenu {
                                                 .text(LocalizationService.getString("start.getBonus", dbUser.getLang()))
                                                 .callbackData("bonus")
                                                 .build()
+                                )),
+                                new InlineKeyboardRow(Collections.singletonList(
+                                        InlineKeyboardButton.builder()
+                                                .text(LocalizationService.getString("addCharacter.button", dbUser.getLang()))
+                                                .callbackData("add-character")
+                                                .build()
+
+                                )),
+                                new InlineKeyboardRow(Collections.singletonList(
+                                        InlineKeyboardButton.builder()
+                                                .text(LocalizationService.getString("addChar.deleteButton", dbUser.getLang()))
+                                                .callbackData("del-all-character")
+                                                .build()
+
+                                )), new InlineKeyboardRow(Collections.singletonList(
+                                        InlineKeyboardButton.builder()
+                                                .text(LocalizationService.getString("vote.button", dbUser.getLang()))
+                                                .url("https://t.me/L2Vote_bot?start=89")
+                                                .build()
+
                                 )),
                                 new InlineKeyboardRow(Collections.singletonList(
                                         InlineKeyboardButton.builder()
@@ -67,7 +88,6 @@ public class MainMenu {
         if (serversPage.getTotalPages() > 1) {
             InlineKeyboardRow paginationRow = new InlineKeyboardRow();
 
-            // Кнопка "Назад", если есть предыдущая страница
             if (serversPage.hasPrevious()) {
                 paginationRow.add(InlineKeyboardButton.builder()
                         .text(LocalizationService.getString("registerMenu.back", dbUser.getLang())) // Локализованный текст для кнопки назад
@@ -75,7 +95,6 @@ public class MainMenu {
                         .build());
             }
 
-            // Кнопка "Вперед", если есть следующая страница
             if (serversPage.hasNext()) {
                 paginationRow.add(InlineKeyboardButton.builder()
                         .text(LocalizationService.getString("registerMenu.forward", dbUser.getLang())) // Локализованный текст для кнопки вперед
@@ -83,21 +102,17 @@ public class MainMenu {
                         .build());
             }
 
-            // Добавляем строку с кнопками пагинации в общий список
             keyboardRows.add(paginationRow);
         }
 
-        // Создаем и возвращаем объект InlineKeyboardMarkup с заполненными строками
         return InlineKeyboardMarkup.builder()
                 .keyboard(keyboardRows)
                 .build();
     }
 
-    // Метод для создания меню с конкурсами, в которых пользователь победил
     public static InlineKeyboardMarkup buildUserWinningsMenu(Page<Raffle> rafflesPage, DbUser dbUser) {
         List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
 
-        // Добавляем кнопки для каждого конкурса
         rafflesPage.getContent().forEach(raffle -> {
             InlineKeyboardButton raffleButton = InlineKeyboardButton.builder()
                     .text(raffle.getName())
@@ -108,7 +123,6 @@ public class MainMenu {
             keyboardRows.add(row);
         });
 
-        // Добавляем кнопки для пагинации, если есть несколько страниц
         if (rafflesPage.getTotalPages() > 1) {
             InlineKeyboardRow paginationRow = new InlineKeyboardRow();
 
@@ -129,7 +143,6 @@ public class MainMenu {
             keyboardRows.add(paginationRow);
         }
 
-        // Кнопка возврата в основное меню
         InlineKeyboardRow backRow = new InlineKeyboardRow();
         backRow.add(InlineKeyboardButton.builder()
                 .text(LocalizationService.getString("mainMenu.button", dbUser.getLang()))
@@ -138,17 +151,13 @@ public class MainMenu {
 
         keyboardRows.add(backRow);
 
-        // Создаем и возвращаем клавиатуру
         return InlineKeyboardMarkup.builder()
                 .keyboard(keyboardRows)
                 .build();
     }
 
-    // Метод для создания меню с конкурсами, в которых пользователь участвовал, но не выиграл
     public static InlineKeyboardMarkup buildNonWinningRafflesMenu(Page<Raffle> rafflesPage, DbUser dbUser) {
         List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
-
-        // Добавляем кнопки для каждого конкурса, в котором пользователь не выиграл
         rafflesPage.getContent().forEach(raffle -> {
             InlineKeyboardButton raffleButton = InlineKeyboardButton.builder()
                     .text(raffle.getName())
@@ -158,8 +167,6 @@ public class MainMenu {
             row.add(raffleButton);
             keyboardRows.add(row);
         });
-
-        // Добавляем кнопки для пагинации, если есть несколько страниц
         if (rafflesPage.getTotalPages() > 1) {
             InlineKeyboardRow paginationRow = new InlineKeyboardRow();
 
@@ -179,8 +186,6 @@ public class MainMenu {
 
             keyboardRows.add(paginationRow);
         }
-
-        // Кнопка возврата в основное меню
         InlineKeyboardRow backRow = new InlineKeyboardRow();
         backRow.add(InlineKeyboardButton.builder()
                 .text(LocalizationService.getString("mainMenu.button", dbUser.getLang()))
@@ -189,13 +194,10 @@ public class MainMenu {
 
         keyboardRows.add(backRow);
 
-        // Создаем и возвращаем клавиатуру
         return InlineKeyboardMarkup.builder()
                 .keyboard(keyboardRows)
                 .build();
     }
-
-
 
 }
 

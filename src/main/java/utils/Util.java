@@ -45,40 +45,8 @@ public class Util {
         return false;
     }
 
-    /**
-     * Метод для экранирования символов в строке, которые могут вызвать ошибки при отправке сообщений через Telegram API.
-     *
-     * @param text Текст, который нужно экранировать.
-     * @return Экранированный текст.
-     */
-    public static String escapeTelegramReservedCharacters(String text) {
-        if (text == null) {
-            return null;
-        }
-        return text.replace("!", "\\!");
-    }
 
-        /**
-         * Генерирует код в формате ****-****, где * - шестнадцатеричная цифра (0-9, a-f).
-         *
-         * @return Сгенерированный код в виде строки.
-         */
-        public static String generateCode() {
-            Random random = new Random();
-            StringBuilder code = new StringBuilder();
 
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 4; j++) {
-                    // Генерируем случайную шестнадцатеричную цифру
-                    int hexDigit = random.nextInt(16);
-                    code.append(Integer.toHexString(hexDigit));
-                }
-                if (i < 1) {
-                    code.append("-");
-                }
-            }
 
-            return code.toString();
-        }
 
 }

@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.net.InetAddress;
+import java.util.UUID;
 
 @SpringBootApplication
 @RequiredArgsConstructor
@@ -54,6 +55,7 @@ public class BotApplication {
         telegramBot.addHandler(context.getBean(JoinHandler.class));
         telegramBot.addHandler(context.getBean(PrizeHandler.class));
         telegramBot.addHandler(context.getBean(BonusHandler.class));
+        telegramBot.addHandler(context.getBean(AddCharHandler.class));
         printSystemInfo();
     }
 

@@ -29,6 +29,9 @@ public class DbUser {
     private List<Raffle> raffles = new ArrayList<>();
     private int state;
 
+    @OneToMany(mappedBy = "dbUser") // Связь один ко многим
+    private List<GameUser> gameUsers;
+
     public DbUser(Long id, String userName, int accessLevel, LocalDateTime regDate, String lang) {
         this.id = id;
         this.userName = userName;
@@ -36,6 +39,4 @@ public class DbUser {
         this.regDate = regDate;
         this.lang = lang;
     }
-
-
 }
