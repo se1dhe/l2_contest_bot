@@ -15,20 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class GameUserService {
 
-    private final GameUserRepository userRepository;
+    private final GameUserRepository gameUserRepository;
     private final DbUserRepository dbUserRepository;
     @Setter
     private int codeValidityMinutes = 5;
 
     @Autowired
-    public GameUserService(GameUserRepository userRepository, DbUserRepository dbUserRepository) {
-        this.userRepository = userRepository;
+    public GameUserService(GameUserRepository gameUserRepository, DbUserRepository dbUserRepository) {
+        this.gameUserRepository = gameUserRepository;
         this.dbUserRepository = dbUserRepository;
     }
 
@@ -44,14 +45,14 @@ public class GameUserService {
         DbUser dbUser = dbUserOptional.get();
 
         // Проверяем, существует ли уже привязка для этого пользователя и сервера
-        Optional<GameUser> existingGameUser = userRepository.findByDbUserAndServerName(dbUser, serverName);
+        Optional<GameUser> existingGameUser = gameUserRepository.findByDbUserAndServerName(dbUser, serverName);
         if (existingGameUser.isPresent()) {
             throw new UserAlreadyBoundException("У этого пользователя уже есть привязанный игровой аккаунт на сервере " + serverName);
         }
 
         GameUser user = new GameUser(dbUser, charId, code, serverName);
         try {
-            return userRepository.save(user);
+            return gameUserRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             if (e.getMostSpecificCause().getMessage().contains("charId")) {
                 throw new DuplicateCharIdException("Пользователь с таким charId уже существует.", e);
@@ -62,20 +63,20 @@ public class GameUserService {
     }
 
     public boolean isCodeValid(String code) {
-        Optional<GameUser> user = userRepository.findByCode(code);
+        Optional<GameUser> user = gameUserRepository.findByCode(code);
         return user.isPresent() && ChronoUnit.MINUTES.between(user.get().getCodeCreatedAt(), LocalDateTime.now()) <= codeValidityMinutes;
     }
 
     @Transactional
     public boolean activateUser(String code, Long charId) {
-        Optional<GameUser> userOptional = userRepository.findByCode(code);
+        Optional<GameUser> userOptional = gameUserRepository.findByCode(code);
         if (userOptional.isEmpty() || !userOptional.get().getCharId().equals(charId) || !isCodeValid(code)) {
             return false;
         }
         GameUser user = userOptional.get();
         user.setActive(true);
-        userRepository.save(user);
-        userRepository.deleteByCode(code);
+        gameUserRepository.save(user);
+        gameUserRepository.deleteByCode(code);
         return true;
     }
 
@@ -84,30 +85,34 @@ public class GameUserService {
         Optional<DbUser> dbUserOptional = dbUserRepository.findById(dbUserId);
         if (dbUserOptional.isPresent()) {
             DbUser dbUser = dbUserOptional.get();
-            Optional<GameUser> userOptional = userRepository.findByDbUser(dbUser);
-            if (userOptional.isPresent()) {
-                GameUser user = userOptional.get();
-                user.setNotified(true);
-                userRepository.save(user);
+            List<GameUser> userOptional = gameUserRepository.findByDbUser(dbUser);
+            if (!userOptional.isEmpty()) {
+                for (GameUser user : userOptional) {
+                    user.setNotified(true);
+                    gameUserRepository.save(user);
+                }
             }
         }
     }
 
-    public Optional<GameUser> findByDbUserId(Long dbUserId) {
+    public List<GameUser> findByDbUserId(Long dbUserId) {
         Optional<DbUser> dbUserOptional = dbUserRepository.findById(dbUserId);
-        return dbUserOptional.flatMap(userRepository::findByDbUser);
+        return dbUserOptional.map(gameUserRepository::findByDbUser).orElse(null);
     }
 
     public Optional<GameUser> findByCharId(Long charId) {
-        return userRepository.findByCharId(charId);
+        return gameUserRepository.findByCharId(charId);
     }
 
     public Optional<GameUser> findByDbUserAndServerName(DbUser dbUser, String serverName) {
-        return userRepository.findByDbUserAndServerName(dbUser, serverName);
+        return gameUserRepository.findByDbUserAndServerName(dbUser, serverName);
     }
 
     @Transactional
     public void deleteAllByDbUser(DbUser dbUser) {
-        userRepository.deleteAllByDbUser(dbUser);
+        gameUserRepository.deleteAllByDbUser(dbUser);
+    }
+    public List<GameUser> findByDbUserAndActive(DbUser dbUser, boolean active) {
+        return gameUserRepository.findByDbUserAndActive(dbUser,active);
     }
 }

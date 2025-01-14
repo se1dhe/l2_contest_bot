@@ -5,6 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.SQLException;
+
 
 public interface ICallbackQueryHandler extends ITelegramHandler {
 	/**
@@ -16,5 +18,5 @@ public interface ICallbackQueryHandler extends ITelegramHandler {
 	 * @return {@code true} whenever this even has to be consumed, {@code false} to continue notified other handlers
 	 * @throws TelegramApiException the exception
 	 */
-	boolean onCallbackQuery(AbstractTelegramBot bot, Update update, CallbackQuery query) throws TelegramApiException;
+	boolean onCallbackQuery(AbstractTelegramBot bot, Update update, CallbackQuery query) throws TelegramApiException, SQLException;
 }

@@ -3,6 +3,7 @@
 package dev.se1dhe.bot.service.dbManager;
 
 import java.sql.*;
+import java.util.List;
 
 public class PainDbManager extends Manager {
     public PainDbManager(String url, String username, String password) throws SQLException {
@@ -67,12 +68,10 @@ public class PainDbManager extends Manager {
         }
     }
 
-
-
-
-
-
-
+    @Override
+    public List<Integer> getStageIdsByCharId(int charId) throws SQLException {
+        return List.of();
+    }
 
 
     public int getObjectIdByCharName(String charName) throws SQLException {

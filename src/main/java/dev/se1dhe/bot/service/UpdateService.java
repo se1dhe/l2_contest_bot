@@ -139,6 +139,7 @@ public class UpdateService {
             raffle.setWinnerCount(parseDelayedRaffle().getWinnerCount());
             raffle.setImgPath(parseDelayedRaffle().getImgPath());
             raffle.setSiteUrl(parseDelayedRaffle().getSiteUrl());
+            raffle.setStageId(parseDelayedRaffle().getStageId());
             List<Prize> prizeList = parseDelayedRaffle().getPrizes();
             raffle.setParticipationBonus(true);
             for (Prize prize : prizeList) {

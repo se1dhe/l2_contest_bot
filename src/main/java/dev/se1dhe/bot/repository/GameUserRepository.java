@@ -12,10 +12,12 @@ import java.util.Optional;
 public interface GameUserRepository extends JpaRepository<GameUser, Long> {
 
     Optional<GameUser> findByCode(String code);
-    Optional<GameUser> findByDbUser(DbUser dbUser);
+    List<GameUser> findByDbUser(DbUser dbUser);
     Optional<GameUser> findByCharId(Long charId);
     Optional<GameUser> findByDbUserAndServerName(DbUser dbUser, String serverName);
+    List<GameUser> findByDbUserAndActive(DbUser dbUser, boolean active);
     void deleteByCode(String code);
     List<GameUser> findByActiveTrueAndNotifiedFalse();
     void deleteAllByDbUser(DbUser dbUser);
+
 }

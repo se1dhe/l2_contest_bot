@@ -1,8 +1,12 @@
 package dev.se1dhe.bot.service.dbManager;
 
 import dev.se1dhe.bot.config.Config;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Lucera2DbManager extends Manager {
     public Lucera2DbManager(String url, String username, String password) throws SQLException {
@@ -125,5 +129,22 @@ public class Lucera2DbManager extends Manager {
         }
 
         return 0;
+    }
+
+    public List<Integer> getStageIdsByCharId(int charId) throws SQLException {
+        List<Integer> stageIds = new ArrayList<>();
+        String query = "SELECT stageId FROM `progress` WHERE `objId` = ?"; // Заменили objId на charId
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, charId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    stageIds.add(resultSet.getInt("stageId"));
+                }
+            }
+        }
+
+        return stageIds;
     }
 }

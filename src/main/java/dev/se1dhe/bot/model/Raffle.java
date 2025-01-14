@@ -46,6 +46,7 @@ public class Raffle {
             joinColumns = {@JoinColumn(name = "raffle_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private List<DbUser> participant = new ArrayList<>();
+    private int stageId;
 
 
     @ManyToMany(fetch = FetchType.EAGER)

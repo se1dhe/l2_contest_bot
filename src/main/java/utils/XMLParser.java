@@ -68,12 +68,12 @@ public class XMLParser {
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
-            // Parse DelayedRaffle details
             Element delayedRaffleElement = doc.getDocumentElement();
             delayedRaffle.setName(getTagValue(delayedRaffleElement, "name"));
             delayedRaffle.setDescription(getTagValue(delayedRaffleElement, "description"));
             delayedRaffle.setStartDate(parseDateTime(getTagValue(delayedRaffleElement, "startDate")));
             delayedRaffle.setRaffleResultDate(parseDateTime(getTagValue(delayedRaffleElement, "endDate")));
+            delayedRaffle.setStageId(Integer.parseInt(getTagValue(delayedRaffleElement, "stageId")));
             delayedRaffle.setImgPath(getTagValue(delayedRaffleElement, "imgPath"));
             delayedRaffle.setChannelForSub(getTagValue(delayedRaffleElement, "channelForSub"));
             delayedRaffle.setSiteUrl(getTagValue(delayedRaffleElement, "siteUrl"));
