@@ -107,6 +107,9 @@ public class GameUserService {
     public Optional<GameUser> findByDbUserAndServerName(DbUser dbUser, String serverName) {
         return gameUserRepository.findByDbUserAndServerName(dbUser, serverName);
     }
+    public Optional<GameUser> findByDbUserAndServerNameAndActive(DbUser dbUser, String serverName, boolean active) {
+        return gameUserRepository.findByDbUserAndServerNameAndActive(dbUser, serverName, active);
+    }
 
     @Transactional
     public void deleteAllByDbUser(DbUser dbUser) {
@@ -115,4 +118,9 @@ public class GameUserService {
     public List<GameUser> findByDbUserAndActive(DbUser dbUser, boolean active) {
         return gameUserRepository.findByDbUserAndActive(dbUser,active);
     }
+
+    public List<GameUser> findByCharIdAndServerNameAndActive(Long charId,String serverName, boolean active) {
+        return gameUserRepository.findByCharIdAndServerNameAndActive(charId, serverName, active);
+    }
+
 }

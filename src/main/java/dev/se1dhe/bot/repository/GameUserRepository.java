@@ -20,4 +20,7 @@ public interface GameUserRepository extends JpaRepository<GameUser, Long> {
     List<GameUser> findByActiveTrueAndNotifiedFalse();
     void deleteAllByDbUser(DbUser dbUser);
 
+    Optional<GameUser> findByDbUserAndServerNameAndActive(DbUser dbUser, String serverName, boolean active);
+
+    List<GameUser> findByCharIdAndServerNameAndActive(Long charId, String serverName, boolean active);
 }

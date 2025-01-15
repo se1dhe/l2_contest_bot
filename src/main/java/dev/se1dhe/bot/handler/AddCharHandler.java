@@ -125,10 +125,15 @@ public class AddCharHandler implements ICallbackQueryHandler, IMessageHandler {
                 resetState(dbUser.getId());
                 return true;
             }
-
-            Manager manager = getManager(userData.get(dbUser.getId()).get("addCharServerName"));
+            String serverName = userData.get(dbUser.getId()).get("addCharServerName");
+            Manager manager = getManager(serverName);
             if (manager == null) {
                 log.error("Не удалось создать менеджер для userId={}", dbUser.getId());
+                return true;
+            }
+            if (gameUserService.findByCharIdAndServerNameAndActive((long) manager.getObjectIdByCharName(charName), serverName, true) != null) {
+                log.warn("Данный персонаж уже привязан {}", charName);
+                BotUtil.sendMessage(BotApplication.telegramBot, message, LocalizationService.getString("join.charAlreadyLinked"), false, false, null);
                 return true;
             }
 
