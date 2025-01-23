@@ -55,26 +55,26 @@ public class JoinHandler implements ICallbackQueryHandler {
             Raffle raffle = raffleService.getRaffleById(raffleId);
 
             if (raffle == null) {
-                BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("raffle.notFound"), false);
+                BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("raffle.notFound"), true);
                 return true;
             }
             if (raffle.getRaffleResultDate().isBefore(LocalDateTime.now())) {
-                BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("raffle.isEnded"), false);
+                BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("raffle.isEnded"), true);
                 return true;
             }
             if (gameUserService.findByDbUserAndActive(dbUser,true)==null||gameUserService.findByDbUserAndActive(dbUser,true).isEmpty()) {
-                BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("join.noCharacter"), false);
+                BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("join.noCharacter"), true);
                 return true;
             }
 
             if (!hasRequiredStageId(dbUser, raffle.getStageId())) {
-                BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.wrongMinimumStageId"),raffle.getStageId()), false);
+                BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.wrongMinimumStageId"),raffle.getStageId()), true);
                 return true;
             }
 
             for (int i = 0; i < raffle.getParticipant().size(); i++) {
                 if (Objects.equals(raffle.getParticipant().get(i).getId(), query.getFrom().getId())) {
-                    BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.already"), Util.dateTimeParser(raffle.getRaffleResultDate())), false);
+                    BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.already"), Util.dateTimeParser(raffle.getRaffleResultDate())), true);
                     return true;
                 }
             }
@@ -82,7 +82,7 @@ public class JoinHandler implements ICallbackQueryHandler {
             raffle.getParticipant().add(dbUser);
             raffleService.update(raffle);
             log.info("Пользователь {} зарегистрирован в конкурсе {}", dbUser.getId(), raffle.getId());
-            BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.successful"), Util.dateTimeParser(raffle.getRaffleResultDate())), false);
+            BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("join.successful"), Util.dateTimeParser(raffle.getRaffleResultDate())), true);
             Message message = (Message) query.getMessage();
             if (!message.hasPhoto()) {
                 BotUtil.editMessage(bot, (Message) query.getMessage(), start(raffle), true, KeyboardBuilder.inline()

@@ -52,4 +52,6 @@ public class GameUser {
         this.notified = false;
         this.serverName = serverName;
     }
+
+
 }
