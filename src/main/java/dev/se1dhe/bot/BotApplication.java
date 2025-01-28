@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -56,6 +58,7 @@ public class BotApplication {
         telegramBot.addHandler(context.getBean(PrizeHandler.class));
         telegramBot.addHandler(context.getBean(BonusHandler.class));
         telegramBot.addHandler(context.getBean(AddCharHandler.class));
+        telegramBot.addHandler(context.getBean(PayHandler.class));
         printSystemInfo();
     }
 
@@ -82,5 +85,10 @@ public class BotApplication {
         log.info("Использовано ОЗУ: {} MB", (usedMemory / (1024 * 1024)));
         log.info("=== ====");
 
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
