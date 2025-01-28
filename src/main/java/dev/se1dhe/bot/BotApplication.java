@@ -2,7 +2,10 @@ package dev.se1dhe.bot;
 
 import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.handler.*;
+import dev.se1dhe.bot.repository.BalanceRepository;
+import dev.se1dhe.bot.repository.TransactionRepository;
 import dev.se1dhe.bot.service.AccessLevelValidator;
+import dev.se1dhe.bot.service.BalanceService;
 import dev.se1dhe.bot.service.DBUserService;
 import dev.se1dhe.core.bots.DefaultTelegramBot;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +61,7 @@ public class BotApplication {
         telegramBot.addHandler(context.getBean(PrizeHandler.class));
         telegramBot.addHandler(context.getBean(BonusHandler.class));
         telegramBot.addHandler(context.getBean(AddCharHandler.class));
-        telegramBot.addHandler(context.getBean(PayHandler.class));
+        telegramBot.addHandler(context.getBean(BalanceHandler.class));
         printSystemInfo();
     }
 
@@ -90,5 +93,10 @@ public class BotApplication {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public BalanceService balanceService(BalanceRepository balanceRepository, TransactionRepository transactionRepository, DBUserService dbUserService) {
+        return new BalanceService(balanceRepository, transactionRepository, dbUserService);
     }
 }

@@ -20,9 +20,6 @@ import java.util.List;
 public class MainMenu {
 
 
-
-
-
     public static InlineKeyboardMarkup mainMenu(DbUser dbUser) {
         return InlineKeyboardMarkup.builder()
                 .keyboard(
@@ -35,6 +32,12 @@ public class MainMenu {
                                         InlineKeyboardButton.builder()
                                                 .text(LocalizationService.getString("start.getBonus", dbUser.getLang()))
                                                 .callbackData("bonus")
+                                                .build()
+                                )),
+                                new InlineKeyboardRow(Collections.singletonList(
+                                        InlineKeyboardButton.builder()
+                                                .text(LocalizationService.getString("balance.menu.button", dbUser.getLang()))
+                                                .callbackData("balance")
                                                 .build()
                                 )),
                                 new InlineKeyboardRow(Collections.singletonList(

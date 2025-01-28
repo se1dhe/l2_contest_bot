@@ -1,8 +1,10 @@
 package dev.se1dhe.bot.service;
 
 
+import dev.se1dhe.bot.model.Balance;
 import dev.se1dhe.bot.model.DbUser;
 import dev.se1dhe.bot.model.Raffle;
+import dev.se1dhe.bot.repository.BalanceRepository;
 import dev.se1dhe.bot.repository.DbUserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,11 @@ import java.util.Optional;
 public class DBUserService {
 
     private final DbUserRepository dbUserRepository;
+    private final BalanceRepository balanceRepository;
 
-    public DBUserService(DbUserRepository dbUserRepository) {
+    public DBUserService(DbUserRepository dbUserRepository, BalanceRepository balanceRepository) {
         this.dbUserRepository = dbUserRepository;
+        this.balanceRepository = balanceRepository;
     }
 
     public DbUser registerUser(User user) {
@@ -29,13 +33,18 @@ public class DBUserService {
         Optional<DbUser> existingUserOptional = dbUserRepository.findById(userId);
 
         if (existingUserOptional.isPresent()) {
-            if(existingUserOptional.get().getLang()==null) {
+            if (existingUserOptional.get().getLang() == null) {
                 existingUserOptional.get().setLang("ru");
             }
             return existingUserOptional.get();
         } else {
             DbUser newUser = new DbUser(userId, userName, 0, LocalDateTime.now(), "ru");
             dbUserRepository.save(newUser);
+
+            // Создаем баланс для нового пользователя, используя BalanceRepository
+            Balance balance = new Balance(newUser);
+            balanceRepository.save(balance);
+
             log.info("Пользователь успешно зарегистрирован: {}", newUser.getUserName());
             return newUser;
         }

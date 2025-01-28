@@ -1,6 +1,8 @@
 package dev.se1dhe.bot.payments;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import dev.se1dhe.bot.BotApplication;
+import dev.se1dhe.bot.service.BalanceService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +35,9 @@ import java.util.Objects;
 @Log4j2
 public class PaymentsService {
 
-    @Value("${primepayments.api.url}")
-    private String API_URL;
+    private final String API_URL_V1 = "https://pay.primepayments.io/API/v1/";
+    private final String API_URL_V2 = "https://pay.primepayments.io/API/v2/";
+
     @Value("${primepayments.api.secret1}")
     private String SECRET1;
     @Value("${primepayments.api.secret2}")
@@ -44,16 +47,16 @@ public class PaymentsService {
     @Value("${primepayments.api.projectId}")
     private long PROJECT_ID;
 
-
-
-
     private final RestTemplate restTemplate;
+    private final BalanceService balanceService;
 
     @Autowired
-    public PaymentsService(RestTemplate restTemplate) {
+    public PaymentsService(RestTemplate restTemplate, BalanceService balanceService) {
         this.restTemplate = restTemplate;
+        this.balanceService = balanceService;
     }
 
+    //region Вспомогательные методы
     private String calculateSign(String... params) {
         StringBuilder sb = new StringBuilder();
         for (String param : params) {
@@ -90,8 +93,9 @@ public class PaymentsService {
         return headers;
     }
 
-    private <T> T sendPostRequest(String action, MultiValueMap<String, String> params, Class<T> responseType) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(API_URL);
+    private <T> T sendPostRequest(String action, MultiValueMap<String, String> params, Class<T> responseType, String apiVersion) {
+        String apiUrl = (apiVersion.equals("v1")) ? API_URL_V1 : API_URL_V2;
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
         params.add("action", action);
         HttpEntity<?> request = new HttpEntity<>(params, getHeaders());
         log.info("Отправка POST запроса на URL: {}", builder.toUriString());
@@ -111,14 +115,15 @@ public class PaymentsService {
             throw new RuntimeException("Ошибка при обращении к API PrimePayments: " + e.getResponseBodyAsString(), e);
         } catch (UnknownContentTypeException e) {
             log.error("Неизвестный тип контента в ответе: {}", e.getMessage());
-            // Получаем тело ответа как строку
             String responseBody = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, request, String.class).getBody();
             log.error("Тело ответа: {}", responseBody);
             throw new RuntimeException("Не удалось извлечь ответ из-за неизвестного типа контента", e);
         }
     }
-    private <T> T sendGetRequest(String action, MultiValueMap<String, String> params, Class<T> responseType) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(API_URL);
+
+    private <T> T sendGetRequest(String action, MultiValueMap<String, String> params, Class<T> responseType, String apiVersion) {
+        String apiUrl = (apiVersion.equals("v1")) ? API_URL_V1 : API_URL_V2;
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl);
 
         if (params == null) {
             params = new LinkedMultiValueMap<>();
@@ -178,7 +183,7 @@ public class PaymentsService {
         params.add("sign", calculateSign(SECRET1, "initPayment", String.valueOf(request.getProject()), request.getSum().toPlainString(), request.getCurrency(), request.getInnerID(), request.getEmail(),
                 request.getPayWay() != null ? String.valueOf(request.getPayWay()) : null));
 
-        return sendPostRequest("initPayment", params, InitPaymentResponse.class);
+        return sendPostRequest("initPayment", params, InitPaymentResponse.class, "v2");
 
     }
 
@@ -189,7 +194,7 @@ public class PaymentsService {
         params.add("project", String.valueOf(PROJECT_ID));
         params.add("orderID", String.valueOf(orderId));
         params.add("sign", calculateSign(SECRET1, "getOrderInfo", String.valueOf(PROJECT_ID), String.valueOf(orderId)));
-        return sendPostRequest("getOrderInfo", params, OrderInfoResponse.class);
+        return sendPostRequest("getOrderInfo", params, OrderInfoResponse.class, "v2");
     }
 
 
@@ -199,9 +204,8 @@ public class PaymentsService {
         params.add("project", String.valueOf(PROJECT_ID));
         params.add("orderID", String.valueOf(orderId));
         params.add("sign", calculateSign(SECRET1, "refund", String.valueOf(PROJECT_ID), String.valueOf(orderId)));
-        return sendPostRequest("refund", params, RefundResponse.class);
+        return sendPostRequest("refund", params, RefundResponse.class, "v2");
     }
-
 
     public InitPayoutResponse initPayout(InitPayoutRequest request) {
         log.info("Инициализация выплаты: {}", request);
@@ -213,14 +217,21 @@ public class PaymentsService {
         params.add("email", request.getEmail());
         params.add("purse", request.getPurse());
 
-        if (request.getCardholder() != null) params.add("cardholder", request.getCardholder());
+        // Дополнительные параметры для карт
+        if (request.getPayWay() == 1) {
+            if (request.getDocNumber() != null) params.add("doc_number", request.getDocNumber());
+            if (request.getCardholderFirstName() != null)
+                params.add("cardholder_first_name", request.getCardholderFirstName());
+            if (request.getCardholderLastName() != null)
+                params.add("cardholder_last_name", request.getCardholderLastName());
+        }
+
         if (request.getComment() != null) params.add("comment", request.getComment());
-        if (request.getSbpId() != null) params.add("SBP_id", request.getSbpId());
         if (request.getNeedUnique() != null) params.add("needUnique", request.getNeedUnique());
 
         params.add("sign", calculateSign(PAYOUT_KEY, "initPayout", String.valueOf(request.getProject()), request.getSum().toPlainString(), request.getCurrency(), String.valueOf(request.getPayWay()), request.getEmail(), request.getPurse()));
 
-        return sendPostRequest("initPayout", params, InitPayoutResponse.class);
+        return sendPostRequest("initPayout", params, InitPayoutResponse.class, "v1");
     }
 
 
@@ -230,7 +241,7 @@ public class PaymentsService {
         params.add("project", String.valueOf(PROJECT_ID));
         params.add("sign", calculateSign(SECRET1, "getProjectBalance", String.valueOf(PROJECT_ID)));
 
-        return sendPostRequest("getProjectBalance", params, ProjectBalanceResponse.class);
+        return sendPostRequest("getProjectBalance", params, ProjectBalanceResponse.class, "v2");
     }
 
 
@@ -241,7 +252,7 @@ public class PaymentsService {
         params.add("payoutID", String.valueOf(payoutId));
         params.add("sign", calculateSign(SECRET1, "getPayoutInfo", String.valueOf(PROJECT_ID), String.valueOf(payoutId)));
 
-        return sendPostRequest("getPayoutInfo", params, PayoutInfoResponse.class);
+        return sendPostRequest("getPayoutInfo", params, PayoutInfoResponse.class, "v2");
     }
 
 
@@ -251,16 +262,18 @@ public class PaymentsService {
         params.add("project", String.valueOf(PROJECT_ID));
         params.add("sign", calculateSign(SECRET1, "getProjectInfo", String.valueOf(PROJECT_ID)));
 
-        return sendPostRequest("getProjectInfo", params, ProjectInfoResponse.class);
+        return sendPostRequest("getProjectInfo", params, ProjectInfoResponse.class, "v2");
     }
-
 
     public ExchangeRatesResponse getExchangeRates() {
         log.info("Получение курсов обмена");
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("sign", calculateSign(SECRET1, "getExchangeRates"));
-        return sendPostRequest("getExchangeRates", params, ExchangeRatesResponse.class);
+        return sendPostRequest("getExchangeRates", params, ExchangeRatesResponse.class, "v2");
     }
+    //endregion
+
+    //region Обработчики вебхуков
 
 
     public String handleOrderPayedNotification(OrderPayedNotification notification) {
@@ -274,6 +287,7 @@ public class PaymentsService {
         // Обработка уведомления об оплате
         log.info("Обработка уведомления об оплате заказа с ID: {}", notification.getOrderID());
 
+        // Получаем innerID (в примере это ID пользователя в Telegram)
         String innerId = notification.getInnerID();
         Long telegramUserId = Long.valueOf(innerId);
 
@@ -288,7 +302,9 @@ public class PaymentsService {
             log.error("Ошибка при отправке сообщения пользователю {}", telegramUserId, e);
         }
 
-        // ... (остальная логика обработки, например, обновление баланса в БД)
+        // Пополнение баланса пользователя
+        balanceService.deposit(telegramUserId, notification.getSum());
+        log.info("Баланс пользователя {} пополнен на сумму {}.", telegramUserId, notification.getSum());
 
         return "OK";
     }
