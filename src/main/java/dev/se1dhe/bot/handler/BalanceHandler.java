@@ -28,6 +28,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import utils.KeyboardBuilder;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,11 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
 
     private final DBUserService dbUserService;
     private final BalanceService balanceService;
-    private final FreeKassaService freeKassaService;
+    private final FreeKassaService freeKassaService;  //Для пополнений
 
-    private final FKWalletService fkWalletService;
+    private final FKWalletService fkWalletService;     //Для вывода и проверки баланса
 
+    // Хранилище для временных данных пользователя (сумма, кошелек и т.д.)
     private final Map<Long, Map<String, String>> userTempData = new HashMap<>();
 
     @Autowired
@@ -61,7 +63,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
         String lang = dbUser.getLang();
         String data = query.getData();
 
-        log.info("Received callback query: user={}, data={}", userId, data); // Логгируем callback
+        log.info("Received callback query: user={}, data={}", userId, data);
 
         userTempData.putIfAbsent(userId, new HashMap<>());
 
@@ -73,9 +75,10 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
                 handleDeposit(bot, query, dbUser);
                 return true;
             }
-            else if (data.startsWith("withdraw_option:")) { // Обработка выбора способа вывода
+
+            else if (data.startsWith("withdraw_option:")) {
                 String option = data.replace("withdraw_option:", "").trim();
-                log.info("User {} selected withdraw option: {}", userId, option); // Логгируем выбор
+                log.info("User {} selected withdraw option: {}", userId, option);
                 handleWithdrawOption(bot, query, dbUser, option);
                 return true;
             }
@@ -116,7 +119,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
 
         if (userTempData.containsKey(userId)) {
             String state = userTempData.get(userId).getOrDefault("state", "");
-            log.info("User {} message received. State: {}", userId, state);
+            log.info("User {} message received. State: {}", userId, state); // Логируем получение сообщения и состояние
             try {
                 if (state.equals("awaiting_deposit_amount")) {
                     handleDepositAmountInput(bot, message, dbUser);
@@ -145,16 +148,32 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
     private void showBalanceMenu(AbstractTelegramBot bot, CallbackQuery query, DbUser dbUser) throws TelegramApiException {
         String lang = dbUser.getLang();
         BigDecimal balance = balanceService.getBalance(dbUser.getId());
+        // Формируем сообщение с текущим балансом пользователя
         String message = String.format(LocalizationService.getString("balance.menu", lang), balance);
 
         try {
+            // Получаем курс обмена для USDT в виде BigDecimal
+            BigDecimal exchangeRate = fkWalletService.getExchangeRate("USDT");
 
+            // Проверяем, что курс обмена не равен нулю, чтобы избежать деления на ноль
+            if (exchangeRate.compareTo(BigDecimal.ZERO) != 0) {
+                // Выполняем деление с указанным масштабом и режимом округления (например, 2 знака после запятой)
+                BigDecimal result = balance.divide(exchangeRate, 2, RoundingMode.HALF_UP);
+                // Преобразуем результат в строку
+                String fkwalletBalance = result.toString();
 
+                // Добавляем информацию о балансе FKWallet в сообщение
+                message += "\n" + String.format(LocalizationService.getString("balance.fkwallet", lang), fkwalletBalance);
+            } else {
+                // Если курс обмена равен нулю, добавляем сообщение об ошибке
+                message += "\n" + LocalizationService.getString("balance.fkwallet.error", lang);
+            }
         } catch (Exception e) {
             log.error("Ошибка при получении баланса FKWallet", e);
             message += "\n" + LocalizationService.getString("balance.fkwallet.error", lang);
         }
 
+        // Создаем клавиатуру для сообщения
         InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()
                 .button(LocalizationService.getString("balance.deposit", lang), "deposit")
                 .row()
@@ -162,21 +181,18 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
                 .row()
                 .button(LocalizationService.getString("balance.check", lang), "check_balance")
                 .row()
-                .button(LocalizationService.getString("balance.payment.systems", lang), "show_payment_systems")
-                .row()
-                .button(LocalizationService.getString("balance.currencies", lang), "currencies")
-                .row()
                 .button(LocalizationService.getString("mainMenu.button", lang), "start-menu")
                 .row()
                 .build();
 
+        // Отправляем сообщение пользователю
         BotUtil.sendMessage(bot, (Message) query.getMessage(), message, false, false, keyboard);
-
     }
+
 
     private void handleDeposit(AbstractTelegramBot bot, CallbackQuery query, DbUser dbUser) throws TelegramApiException {
         userTempData.get(dbUser.getId()).put("state", "awaiting_deposit_amount");
-        BotUtil.sendMessage(bot,  (Message) query.getMessage(), LocalizationService.getString("deposit.enter_amount", dbUser.getLang()), false, false, null); //editMessage -> sendMessage
+        BotUtil.sendMessage(bot, (Message) query.getMessage(), LocalizationService.getString("deposit.enter_amount", dbUser.getLang()), false, false, null); //editMessage -> sendMessage
     }
 
     private void handleDepositAmountInput(AbstractTelegramBot bot, Message message, DbUser dbUser) throws TelegramApiException {
@@ -222,12 +238,12 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
             log.info("Ссылка на оплату: {}", paymentUrl);
 
             InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()
-                    .buttonUrl(LocalizationService.getString("deposit.pay", dbUser.getLang()), paymentUrl)
+                    .buttonUrl(LocalizationService.getString("deposit.pay", dbUser.getLang()), paymentUrl) // Используем URL
                     .row()
                     .button(LocalizationService.getString("registerMenu.back", dbUser.getLang()), "back_to_balance")
                     .build();
 
-            BotUtil.sendMessage(bot, (Message) query.getMessage(), String.format(LocalizationService.getString("deposit.payment_link", dbUser.getLang()), paymentUrl), false, false, keyboard);
+            BotUtil.editMessage(bot, query, String.format(LocalizationService.getString("deposit.payment_link", dbUser.getLang()), paymentUrl), false, keyboard);
 
         } catch (Exception e) {
             log.error("Ошибка при обращении к API FreeKassa", e);
@@ -254,10 +270,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
     private void handleWithdrawOption(AbstractTelegramBot bot, CallbackQuery query, DbUser dbUser, String option) throws  TelegramApiException {
         userTempData.get(dbUser.getId()).put("withdraw_option", option);
         userTempData.get(dbUser.getId()).put("state", "awaiting_withdraw_amount");
-
-        String messageKey = (option.equals("trc20")) ? "withdraw.enter_amount_usdt" : "withdraw.enter_amount";
-
-        BotUtil.editMessage(bot, (Message) query.getMessage(), LocalizationService.getString(messageKey, dbUser.getLang()), false,  null);
+        BotUtil.sendMessage(bot, (Message) query.getMessage(), LocalizationService.getString("withdraw.enter_amount", dbUser.getLang()), false, false, null);
     }
 
     private void handleWithdrawAmountInput(AbstractTelegramBot bot, Message message, DbUser dbUser) throws TelegramApiException {
@@ -268,7 +281,15 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
                 return;
             }
 
-            if (balanceService.getBalance(dbUser.getId()).compareTo(amount) < 0) {
+            String withdrawOption = userTempData.get(dbUser.getId()).get("withdraw_option");
+            BigDecimal amountInRub = amount;
+
+            if ("trc20".equals(withdrawOption)) {
+                BigDecimal usdtToRubRate = new BigDecimal(String.valueOf(fkWalletService.getExchangeRate("USDT")));
+                amountInRub = amount.multiply(usdtToRubRate);
+            }
+
+            if (balanceService.getBalance(dbUser.getId()).compareTo(amountInRub) < 0) {
                 InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()
                         .button(LocalizationService.getString("mainMenu.button", dbUser.getLang()), "start-menu")
                         .build();
@@ -276,19 +297,24 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
                 return;
             }
 
-            userTempData.get(dbUser.getId()).put("withdraw_amount", amount.toString());
-            userTempData.get(dbUser.getId()).put("state", "awaiting_purse");
-
-            String withdrawOption = userTempData.get(dbUser.getId()).get("withdraw_option");
-            if("trc20".equals(withdrawOption)) {
-                BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.enter_purse", dbUser.getLang()), false, false, null);
-            } else if ("card".equals(withdrawOption)) {
-                BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.enter_card", dbUser.getLang()), false, false, null); // withdraw.enter_card
+            userTempData.get(dbUser.getId()).put("withdraw_amount", amount.toPlainString()); // Сохраняем введенную пользователем сумму (USDT или RUB)
+            if ("trc20".equals(withdrawOption)) {
+                userTempData.get(dbUser.getId()).put("withdraw_amount_rub", amountInRub.toPlainString()); // Сохраняем в рублях
             }
 
+            userTempData.get(dbUser.getId()).put("state", "awaiting_purse");
+
+            if ("trc20".equals(withdrawOption)) {
+                BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.enter_purse", dbUser.getLang()), false, false, null);
+            } else if ("card".equals(withdrawOption)) {
+                BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.enter_card", dbUser.getLang()), false, false, null);
+            }
 
         } catch (NumberFormatException e) {
             BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.invalid_amount", dbUser.getLang()), false, false, null);
+        }  catch (Exception e) {
+            log.error("Ошибка при получении курса USDT/RUB", e);
+            BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.error.rate", dbUser.getLang()), false, false, null);
         }
     }
     private void handleWithdrawPurseInput(AbstractTelegramBot bot, Message message, DbUser dbUser) throws TelegramApiException {
@@ -299,18 +325,22 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
             BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.invalid_purse_trc20", dbUser.getLang()), false, false, null);
             return;
         } else if ("card".equals(withdrawOption) && !isValidCardNumber(purse)) {
-            BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.invalid_purse_card", dbUser.getLang()), false, false, null);
+            BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.invalid_purse_card", dbUser.getLang()), false, false, null); //  withdraw.invalid_card
             return;
         }
 
-
-        BigDecimal amount = new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount"));
+        BigDecimal amount;
+        if ("trc20".equals(withdrawOption)) {
+            amount = new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount"));
+        } else {
+            amount = new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount")); // Используем withdraw_amount
+        }
 
         WithdrawFkWalletRequest withdrawRequest = WithdrawFkWalletRequest.builder()
                 .amount(amount)
                 .currency("trc20".equals(withdrawOption) ? 11 : 1)
                 .paymentSystemId("trc20".equals(withdrawOption) ? 4: 6)
-                .feeFromBalance(1)
+                .feeFromBalance(1) // 1 - комиссия с баланса
                 .account(purse)
                 .description("Вывод средств")
                 .orderId(Integer.valueOf(String.valueOf(dbUser.getId())))
@@ -324,14 +354,15 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
         try {
             WithdrawFkWalletResponse response =  fkWalletService.createWithdrawal(withdrawRequest);
             if (response != null && response.getStatus().equalsIgnoreCase("success")) {
-                balanceService.withdraw(dbUser.getId(), amount);
+                balanceService.withdraw(dbUser.getId(), "trc20".equals(withdrawOption) ?
+                        new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount_rub")) : amount);
                 BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.success", dbUser.getLang()), false, false, keyboard);
             } else {
                 String errorMessage = (response != null && response.getMessage() != null) ?
                         response.getMessage() :
-                        LocalizationService.getString("withdraw.error", dbUser.getLang());
+                        LocalizationService.getString("withdraw.error", dbUser.getLang()); // Общее сообщение, если нет ответа
                 log.error("Ошибка при создании запроса на вывод: {}", errorMessage);
-                BotUtil.sendMessage(bot, message, errorMessage, false, false, keyboard);
+                BotUtil.sendMessage(bot, message, errorMessage, false, false, keyboard); // Показываем ошибку пользователю
             }
         } catch (WithdrawException e) {
             log.error("Ошибка при выводе средств", e);
@@ -342,8 +373,10 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
             BotUtil.sendMessage(bot, message, LocalizationService.getString("withdraw.error", dbUser.getLang()), false, false, keyboard);
         } finally {
             userTempData.get(dbUser.getId()).remove("withdraw_amount");
+            userTempData.get(dbUser.getId()).remove("withdraw_amount_usdt");
+            userTempData.get(dbUser.getId()).remove("withdraw_amount_rub");
             userTempData.get(dbUser.getId()).remove("purse");
-            userTempData.get(dbUser.getId()).remove("withdraw_option");
+            userTempData.get(dbUser.getId()).remove("withdraw_option"); // Очищаем withdraw_option
             userTempData.get(dbUser.getId()).put("state", "idle");
         }
     }
@@ -355,7 +388,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
             BotUtil.sendAnswerCallbackQuery(bot, query, String.format(LocalizationService.getString("balance.fkwallet", dbUser.getLang()), balance), false);
         } catch (Exception e) {
             log.error("Ошибка при получении баланса FKWallet", e);
-            BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("balance.fkwallet.error", dbUser.getLang()), true); //fkwallet.error
+            BotUtil.sendAnswerCallbackQuery(bot, query, LocalizationService.getString("balance.fkwallet.error", dbUser.getLang()), true);
         }
     }
     private void showAvailableCurrencies(AbstractTelegramBot bot, CallbackQuery query, DbUser dbUser) throws TelegramApiException {
@@ -363,18 +396,18 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
             CurrenciesResponse currenciesResponse = fkWalletService.getCurrencies();
             if (currenciesResponse != null && "success".equals(currenciesResponse.getStatus())) {
                 StringBuilder message = new StringBuilder(LocalizationService.getString("currencies.list", dbUser.getLang()));
-                for (Currency currency : currenciesResponse.getData()) {
+                for (dev.se1dhe.bot.payments.fkwallet.dto.response.Currency currency : currenciesResponse.getData()) {
                     message.append(String.format("\n- %s (ID: %d, Курс: %s)", currency.getCode(), currency.getId(), currency.getCourse()));
                 }
 
-                InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()
+                InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()//добавляем кнопку
                         .button(LocalizationService.getString("mainMenu.button", dbUser.getLang()), "start-menu")
                         .build();
                 BotUtil.sendMessage(bot, (Message) query.getMessage(), message.toString(), false, false, keyboard);
 
             } else {
                 log.error("Ошибка при получении списка валют: {}", currenciesResponse != null ? currenciesResponse.getData() : "null response");
-                InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()
+                InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()//добавляем кнопку
                         .button(LocalizationService.getString("mainMenu.button", dbUser.getLang()), "start-menu")
                         .build();
                 BotUtil.sendMessage(bot,  (Message) query.getMessage(), LocalizationService.getString("currencies.error", dbUser.getLang()), false, false, keyboard);
@@ -382,7 +415,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
             }
         } catch (Exception e) {
             log.error("Ошибка при обращении к API FKWallet", e);
-            InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()
+            InlineKeyboardMarkup keyboard = KeyboardBuilder.inline()//добавляем кнопку
                     .button(LocalizationService.getString("mainMenu.button", dbUser.getLang()), "start-menu")
                     .build();
             BotUtil.sendMessage(bot, (Message) query.getMessage(), LocalizationService.getString("currencies.error", dbUser.getLang()), false, false, keyboard);
