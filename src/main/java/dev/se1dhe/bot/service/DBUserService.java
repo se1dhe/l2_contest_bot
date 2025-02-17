@@ -1,6 +1,7 @@
 package dev.se1dhe.bot.service;
 
 
+import dev.se1dhe.bot.exception.UserNotFoundException;
 import dev.se1dhe.bot.model.Balance;
 import dev.se1dhe.bot.model.DbUser;
 import dev.se1dhe.bot.model.Raffle;
@@ -41,7 +42,6 @@ public class DBUserService {
             DbUser newUser = new DbUser(userId, userName, 0, LocalDateTime.now(), "ru");
             dbUserRepository.save(newUser);
 
-            // Создаем баланс для нового пользователя, используя BalanceRepository
             Balance balance = new Balance(newUser);
             balanceRepository.save(balance);
 
@@ -51,24 +51,13 @@ public class DBUserService {
     }
 
     public DbUser findUserById(Long id) {
-        DbUser user = dbUserRepository.findById(id).orElse(null);
-
-        if (user != null) {
-            log.info("Пользователь найден: {}", user);
-        } else {
-            log.info("Пользователь с ID {} не найден", id);
-        }
-
-        return user;
+        return dbUserRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
     public void updateUser(DbUser user) {
         log.info("Изменение информации пользователя: {}", user);
 
-        // Проверка существования пользователя с таким же ID
-        // ...
-
-        // Обновление информации пользователя в базе данных
         dbUserRepository.save(user);
 
         log.info("Информация пользователя успешно обновлена");
