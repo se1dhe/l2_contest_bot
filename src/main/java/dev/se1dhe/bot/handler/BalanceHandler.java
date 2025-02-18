@@ -254,7 +254,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
                 .row()
                 .button(LocalizationService.getString("registerMenu.back", dbUser.getLang()), "back_to_balance")
                 .build();
-        BotUtil.sendMessage(bot, (Message) query.getMessage(), LocalizationService.getString("withdraw.select_option", dbUser.getLang()), false, false, keyboard);
+        BotUtil.editMessage(bot, (Message) query.getMessage(), LocalizationService.getString("withdraw.select_option", dbUser.getLang()), false, keyboard);
     }
 
     private void handleWithdrawOption(AbstractTelegramBot bot, CallbackQuery query, DbUser dbUser, String option) throws TelegramApiException {
