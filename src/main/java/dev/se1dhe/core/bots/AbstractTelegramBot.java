@@ -143,6 +143,11 @@ public class AbstractTelegramBot implements LongPollingUpdateConsumer, TelegramC
                 return;
             }
 
+            if (update.getMessage().getLeftChatMember() != null) {
+                handleUpdate(ILeftChatMember.class, update, Update::getMessage, Message::getFrom, handler -> handler.onLeftChatMember(this, update, update.getMessage()));
+                return;
+            }
+
             if (update.hasChatMember()) {
                 handleUpdate(IChatMemberHandler.class, update, Update::getChatMember, ChatMemberUpdated::getFrom, handler -> handler.onChatMember(this, update, update.getChatMember()));
                 return;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RaffleService {
@@ -67,17 +68,28 @@ public class RaffleService {
                 raffle.getParticipant().remove(user);
                 user.getRaffles().remove(raffle);
 
-                raffleRepository.save(raffle);  // Сохранение изменений в Raffle
-                dbUserRepository.save(user);    // Сохранение изменений в DbUser
+                raffleRepository.save(raffle);
+                dbUserRepository.save(user);
             }
         }
     }
 
-    // Добавьте этот метод в класс RaffleService
     public Page<Raffle> findNonWinningRafflesByUser(DbUser dbUser, RaffleType type, Pageable pageable) {
         return raffleRepository.findNonWinningRafflesByUserAndType(dbUser, type, pageable);
     }
 
-
-
+    @Transactional
+    public void removeParticipantFromAllRaffles(Long userId) {
+        DbUser user = dbUserRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return;
+        }
+        List<Raffle> raffles = user.getRaffles();
+        for (Raffle raffle : new ArrayList<>(raffles)) {
+            raffle.getParticipant().remove(user);
+            raffleRepository.save(raffle);
+        }
+        user.getRaffles().clear();
+        dbUserRepository.save(user);
+    }
 }
