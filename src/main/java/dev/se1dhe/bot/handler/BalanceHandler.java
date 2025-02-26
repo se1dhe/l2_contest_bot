@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 @Service
@@ -326,12 +327,8 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
         }
 
         BigDecimal amount;
-        if ("trc20".equals(withdrawOption)) {
-            amount = new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount"));
-        } else {
-            amount = new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount"));
-        }
-
+        amount = new BigDecimal(userTempData.get(dbUser.getId()).get("withdraw_amount"));
+        int orderId = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         WithdrawFkWalletRequest withdrawRequest = WithdrawFkWalletRequest.builder()
                 .amount(amount)
                 .currency("trc20".equals(withdrawOption) ? 11 : 1)
@@ -339,7 +336,7 @@ public class BalanceHandler implements ICallbackQueryHandler, IMessageHandler {
                 .feeFromBalance(0)
                 .account(purse)
                 .description("Вывод средств: " + dbUser.getId())
-                .orderId(Integer.valueOf(String.valueOf(dbUser.getId())))
+                .orderId(orderId)
                 .idempotenceKey(UUID.randomUUID().toString())
                 .build();
 

@@ -17,6 +17,5 @@ public class Notification {
     private String SIGN;
     private String payer_account;
     private BigDecimal commission;
-    // ... другие параметры, которые вам нужны
     private Map<String, String> us; // Дополнительные параметры
 }
